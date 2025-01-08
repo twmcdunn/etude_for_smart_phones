@@ -1,0 +1,17 @@
+Data in Database
+EVENT_NUM	START_TIME	VOLUME
+
+Data Text File
+EVENT
+	EVENT_NUM
+	EVENT_ACTIVATION_TIME (when does it become possible for a to play the event)
+	EVENT_USER_NUM
+	EVENT_NOTES
+		NOTE
+			NOTE_HS
+			NOTE_RELATIVE_TIME
+			NOTE_RELATIVE_VOL
+			NOTE_SAMPLE_NUM
+			NOTE_USER_NUM
+	
+	

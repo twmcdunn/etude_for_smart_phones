@@ -14,12 +14,13 @@ var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 console.log("hi");
 
-var buttonFuncs = [readNotesFromDB, startPieceLocal, startPieceGlobal, test];
+var buttonFuncs = [readNotesFromDB, startPieceLocal, startPieceGlobal, test, readComposition];
 var buttonTexts = [
     "Read Notes from DB",
     "Start Piece Local",
     "Start Piece Global",
-    "TEST"
+    "TEST",
+    "Read Composition"
 ];
 
 for (let i = 0; i < buttonFuncs.length; i++) {
@@ -203,9 +204,8 @@ function readNotesFromDB(play, un) {
                 if (play) {
                     console.log("PLAY = ", play);
                     playNote(
-                        element.NOTE_HS.N,
-                        element.NOTE_SAMPLE.N,
-                        element.NOTE_VOL.N
+                        element.EVENT_NUM.N,
+                        element.EVENT_VOL.N
                     );
                 }
 
@@ -215,8 +215,8 @@ function readNotesFromDB(play, un) {
     });
 }
 
-function playNote(hs, sample, vol) {
-    console.log("PLAY NOTE", hs);
+function playNote(eventNum, eventVol) {
+    console.log("PLAY NOTE", eventNum);
 }
 
 function removeFromDB(userNum, timeNum) {
