@@ -18,7 +18,7 @@ var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 //useLocalDB();
 
-//var ddb = new AWS.DynamoDB();//{ apiVersion: "2012-08-10" });
+//var ddb = null;//new AWS.DynamoDB();//{ apiVersion: "2012-08-10" });
 
 async function useLocalDB(){
 
@@ -46,6 +46,9 @@ async function useLocalDB(){
     AWS.config.update({
         endpoint: 'http://localhost:8000', // Default DynamoDB Local endpoint
         region: 'local', // Dummy region
+
+        accessKeyId: 'dummy',
+        secretAccessKey: 'dummy',
         credentials: {
           accessKeyId: 'dummy',
           secretAccessKey: 'dummy'
@@ -55,6 +58,8 @@ async function useLocalDB(){
     ddb = new AWS.DynamoDB({
         endpoint: 'http://localhost:8000', // Default DynamoDB Local endpoint
         region: 'local', // Dummy region
+        accessKeyId: 'dummy',
+        secretAccessKey: 'dummy',
         credentials: {
           accessKeyId: 'dummy',
           secretAccessKey: 'dummy'
@@ -185,7 +190,8 @@ function updateAndGetUserNum(){
             console.log("error", err);
         }
         else{
-            console.log("USER_NUM_UPDATED. OLD = ", data.Attributes.NUM_OF_USERS.N)
+            console.log("USER_NUM_UPDATED. OLD = ", data.Attributes.NUM_OF_USERS.N);
+            myUserNum = data.Attributes.NUM_OF_USERS.N;
             checkIfStartedInterval = setInterval(checkIfStarted, 1000);
         }
     });
@@ -199,7 +205,7 @@ function checkIfStarted(){
         },
         KeyConditionExpression: "EVENT_NUM = :a",
         ProjectionExpression: "EVENT_NUM,NUM_OF_USERS,PIECE_START_TIME",
-        TableName: "EFSP_NOTES"
+        TableName: "EFSP_EVENTS"
     };
 
     var results = ddb.query(params, function (err, data) {
@@ -220,16 +226,17 @@ function startPiece(){
         },
         KeyConditionExpression: "EVENT_NUM = :a",
         ProjectionExpression: "EVENT_NUM,NUM_OF_USERS",
-        TableName: "EFSP_NOTES"
+        TableName: "EFSP_EVENTS"
     };
 
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
         } else{
-            readComposition(myUserNum, data.Items[0].NUM_OF_USERS.N);
-            scheduleEventActivations();
-            scheduleEventListener();
+            readComposition(myUserNum, data.Items[0].NUM_OF_USERS.N, function(){
+                scheduleEventActivations();
+                scheduleEventListener();
+            });
         }
     });
 }
@@ -247,8 +254,9 @@ function scheduleEventActivations(){
 var eventListenerInterval = -1;
 function scheduleEventListener(){//"Even listeners" are really home grown
     //listen at regular intervals a little smaller than the relative time of the next note to play
-    var now = new Date().getTime();
-    eventListenerInterval = setInterval(listenForEvent, Math.max(myNotes[0].relativeTime - 500, 50));
+   // var now = new Date().getTime();
+    var t = Math.max(myNotes[0].relativeTime - 500, 50)
+    eventListenerInterval = setInterval(listenForEvent, t);
 }
 
 function listenForEvent(){
@@ -259,14 +267,13 @@ function listenForEvent(){
         },
         KeyConditionExpression: "EVENT_NUM = :a",
         ProjectionExpression: "EVENT_NUM,TIME_NUM,EVENT_VOL",
-        TableName: "EFSP_NOTES"
+        TableName: "EFSP_EVENTS"
     };
 
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
         } else if(data.Count > 0){
-            myUserNum = data.Items[0].NUM_OF_USERS.N;
             //since this method pops all notes that are children of the event
             //there will be no duplicate invocations
             scheduleNotes(eventNum, data.Items[0].TIME_NUM.N,data.Items[0].EVENT_VOL.N);

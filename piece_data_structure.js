@@ -31,7 +31,7 @@ class Note {
     }
 }
 
-function readComposition(userNum, totUsers) {
+function readComposition(userNum, totUsers, callback) {
     fetch(dir + "composition.txt")
         .then((res) => res.text())
         .then((text) => {
@@ -44,16 +44,19 @@ function readComposition(userNum, totUsers) {
                     while(n < lines.length && lines[n] === "NOTE"){
                         var note = new Note(lines[n+1],lines[n+2],lines[n+3],lines[n+4],lines[n+5], event);
                         event.add(note);
-                        if(note.userNum % totUsers === userNum){
+                        if(note.userNum % Number(totUsers) === Number(userNum)){
                             myNotes.push(note);
                         }
                         n += 6;
                     }
                     soundEvents.push(event);
-                    if(event.userNum % totUsers === userNum){
+                    if(event.userNum % Number(totUsers) === Number(userNum)){
                         mySoundEvents.push(event);
                     }
                 }
+            }
+            if(callback != undefined){
+                callback();
             }
         })
         .catch((e) => console.error(e));
