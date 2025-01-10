@@ -3,6 +3,8 @@ var dir = "./";
 dir = "https://twmcdunn.github.io/etude_for_smart_phones/"
 
 var soundEvents = [];
+var mySoundEvents = [];
+var myNotes = [];
 
 class SoundEvent {
     constructor(eventNum, activationTime, userNum) {
@@ -18,16 +20,18 @@ class SoundEvent {
 }
 
 class Note {
-    constructor(hs, relativeTime, relativeVol, sampleNum, userNum) {
+    constructor(hs, relativeTime, relativeVol, sampleNum, userNum, parentSoundEvent) {
         this.hs = Number(hs);
         this.relativeTime = Number(relativeTime);
         this.relativeVol = Number(relativeVol);
         this.sampleNum = Number(sampleNum);
         this.userNum = Number(userNum);
+        this.parentEventNum = parentSoundEvent.eventNum;
+        this.parentActivationTime = parentSoundEvent.activationTime;
     }
 }
 
-function readComposition() {
+function readComposition(userNum, totUsers) {
     fetch(dir + "composition.txt")
         .then((res) => res.text())
         .then((text) => {
@@ -38,10 +42,17 @@ function readComposition() {
                     var event = new SoundEvent(lines[n+1],lines[n+2],lines[n+3]);
                     n += 4;
                     while(n < lines.length && lines[n] === "NOTE"){
-                        event.add(new Note(lines[n+1],lines[n+2],lines[n+3],lines[n+4],lines[n+5]));
+                        var note = new Note(lines[n+1],lines[n+2],lines[n+3],lines[n+4],lines[n+5], event);
+                        event.add(note);
+                        if(note.userNum % totUsers === userNum){
+                            myNotes.push(note);
+                        }
                         n += 6;
                     }
                     soundEvents.push(event);
+                    if(event.userNum % totUsers === userNum){
+                        mySoundEvents.push(event);
+                    }
                 }
             }
         })

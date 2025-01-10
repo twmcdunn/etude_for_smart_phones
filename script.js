@@ -14,13 +14,12 @@ var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 console.log("hi");
 
-var buttonFuncs = [readNotesFromDB, startPieceLocal, startPieceGlobal, test, readComposition];
+var buttonFuncs = [resetLocalData, test, readComposition, updateAndGetUserNum];
 var buttonTexts = [
-    "Read Notes from DB",
-    "Start Piece Local",
-    "Start Piece Global",
+    "Reset Local Data",
     "TEST",
-    "Read Composition"
+    "Read Composition",
+    "Update and get user num"
 ];
 
 for (let i = 0; i < buttonFuncs.length; i++) {
@@ -59,206 +58,206 @@ async function test() {
     //r = await getUserNum().promise();
 }
 
+//within an async function this syntax works
+// await db.call
+//however, it only seems to work once per visit to the
+//site.
+
+resetLocalData() ;
+
 let myUserNum = -1;
-async function startPieceLocal() {
-    console.log("SSTART");
-    if (myUserNum == -1) {
-        await getUserNum().promise();
-        incrementUsers();
-    }
-
-    putToDB(myUserNum, new Date().getTime() + 3000, 23, 0, 0);
-    //r = await r.promise();
-    console.log("IN SPL", myUserNum);
-    //r.then((results) => {console.log("Results", myUserNum)});//
-    //setInterval(readNotesFromDB ,50, true);
-
-    //startPieceGlobal();
+let activeSoundEvents = 0;
+let pieceStartTime = -1;
+function resetLocalData() {
+    myUserNum = -1;
+    activeSoundEvents = 0;
+    pieceStartTime = -1;
+    updateAndGetUserNum();
 }
 
-//startPieceLocal();
-
-function getUserNum() {
+var checkIfStartedInterval = -1;
+function updateAndGetUserNum(){
     var params = {
         ExpressionAttributeValues: {
-            ":a": { N: "-1" },
-            ":t": { N: "-1" }
+            ":increment": { N: "1" }
         },
-        KeyConditionExpression: "USER_NUM = :a and TIME_NUM = :t",
-        ProjectionExpression: "NUM_OF_USERS",
+        Key: {
+            EVENT_NUM: {
+                N: "-1"
+            }
+        },
+        UpdateExpression: "SET NUM_OF_USERS = NUM_OF_USERS + :increment",
+        TableName: "EFSP_EVENTS",
+        ReturnValues: "UPDATED_OLD"
+    };
+    ddb.updateItem(params, function (err, data) {
+        //document.writeln("RESULT", data.Items[0].element.NUM_OF_USERS.N);
+        
+        if (err) {
+            console.log("error", err);
+        }
+        else{
+            console.log("USER_NUM_UPDATED. OLD = ", data.Attributes.NUM_OF_USERS.N)
+            checkIfStartedInterval = setInterval(checkIfStarted, 1000);
+        }
+    });
+}
+
+
+function checkIfStarted(){
+    var params = {
+        ExpressionAttributeValues: {
+            ":a": { N: "-1" }
+        },
+        KeyConditionExpression: "EVENT_NUM = :a",
+        ProjectionExpression: "EVENT_NUM,NUM_OF_USERS,PIECE_START_TIME",
         TableName: "EFSP_NOTES"
     };
 
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
-        } else {
-            myUserNum = data.Items[0].NUM_OF_USERS.N;
-            console.log("IN ADDUSER", myUserNum);
+        } else if(data.Items[0].PIECE_START_TIME.N != -1){
+            clearInterval(checkIfStartedInterval);
+            pieceStartTime = data.Items[0].PIECE_START_TIME.N;
+            startPiece();
         }
     });
-    return results;
 }
 
-function incrementUsers() {
+function startPiece(){
+    var params = {
+        ExpressionAttributeValues: {
+            ":a": { N: "-1" }
+        },
+        KeyConditionExpression: "EVENT_NUM = :a",
+        ProjectionExpression: "EVENT_NUM,NUM_OF_USERS",
+        TableName: "EFSP_NOTES"
+    };
+
+    var results = ddb.query(params, function (err, data) {
+        if (err) {
+            console.log("error", err);
+        } else{
+            readComposition(myUserNum, data.Items[0].NUM_OF_USERS.N);
+            scheduleEventActivations();
+            scheduleEventListener();
+        }
+    });
+}
+
+//allows this user to instantiate an event
+var eventActivationIntervals = [];
+function scheduleEventActivations(){
+    mySoundEvents.forEach(function(event){
+        eventActivationIntervals.push(setInterval(activateSoundEvent, pieceStartTime + event.activationTime - new Date().getTime()));
+    });
+}
+
+//allows this user to schedule his child notes of an
+//event written to the database
+var eventListenerInterval = -1;
+function scheduleEventListener(){//"Even listeners" are really home grown
+    //listen at regular intervals a little smaller than the relative time of the next note to play
+    var now = new Date().getTime();
+    eventListenerInterval = setInterval(listenForEvent, Math.max(myNotes[0].relativeTime - 500, 50));
+}
+
+function listenForEvent(){
+    var eventNum = myNotes[0].parentEventNum;
+    var params = {
+        ExpressionAttributeValues: {
+            ":a": { N: eventNum.toString() }
+        },
+        KeyConditionExpression: "EVENT_NUM = :a",
+        ProjectionExpression: "EVENT_NUM,TIME_NUM,EVENT_VOL",
+        TableName: "EFSP_NOTES"
+    };
+
+    var results = ddb.query(params, function (err, data) {
+        if (err) {
+            console.log("error", err);
+        } else if(data.Count > 0){
+            myUserNum = data.Items[0].NUM_OF_USERS.N;
+            //since this method pops all notes that are children of the event
+            //there will be no duplicate invocations
+            scheduleNotes(eventNum, data.Items[0].TIME_NUM.N,data.Items[0].EVENT_VOL.N);
+        }
+    });
+}
+
+var noteIntervals = [];
+function scheduleNotes(eventNum, eventTime, eventVol){
+    clearInterval(eventListenerInterval);
+    while(myNotes.length > 0 && myNotes[0].parentEventNum === eventNum){
+        let note = myNotes.shift();
+        noteIntervals.push(setInterval(function(){
+            clearInterval(noteIntervals.shift());
+            playNote(note.hs, note.relativeVol * eventVol, note.sampleNum);
+        }, eventTime + note.relativeTime - new Date().getTime()));
+    }    
+    scheduleEventListener();
+}
+
+function playNote(hs,vol,sampleNum){
+    console.log("PLAY NOTE ", hs, vol, sampleNum);
+}
+
+function activateSoundEvent(){
+    activeSoundEvents++;
+    if(activeSoundEvents == 1){
+        addInstructionsGraphic();
+    }
+    clearInterval(eventActivationIntervals.shift());
+}
+
+function instantiateSoundEvent(eventVol){
+    activeSoundEvents--;
+
+    if(!Number.isFinite(eventVol)) eventVol = 1;//for testing
+
+    if(activateSoundEvent == 0){
+        removeInstructionsGraphic();
+    }
+
     var params = {
         ExpressionAttributeValues: {
             ":increment": { N: "1" }
         },
         Key: {
-            USER_NUM: {
-                N: "-1"
-            },
-            TIME_NUM: {
+            EVENT_NUM: {
                 N: "-1"
             }
         },
-        UpdateExpression: "SET NUM_OF_USERS = NUM_OF_USERS + :increment",
-        TableName: "EFSP_NOTES"
-    };
-    ddb.updateItem(params, function (err, data) {
-        //document.writeln("RESULT", data.Items[0].element.NUM_OF_USERS.N);
-        if (err) {
-            console.log("error", err);
-        }
-    });
-}
-
-async function startPieceGlobal() {
-    if (myUserNum == -1) await getUserNum().promise();
-    for (let i = 0; i < myUserNum; i++) {
-        readNotesFromDB(false, i);
-    }
-    console.log("removed notes");
-    //return;
-
-    console.log("start piece global...");
-
-    ["NUM_OF_USERS", "CHORD_NUM"].forEach(function (attr) {
-        var params = {
-            ExpressionAttributeValues: {
-                ":zero": { N: "0" }
-            },
-            Key: {
-                USER_NUM: {
-                    N: "-1"
-                },
-                TIME_NUM: {
-                    N: "-1"
-                }
-            },
-            UpdateExpression: "SET " + attr + " = :zero",
-            TableName: "EFSP_NOTES"
-        };
-        ddb.updateItem(params, function (err, data) {
-            if (err) {
-                console.log("error", err);
-            }
-        });
-    });
-
-    var params = {
-        ExpressionAttributeValues: {
-            ":now": { N: new Date().getTime().toString() }
-        },
-        Key: {
-            USER_NUM: {
-                N: "-1"
-            },
-            TIME_NUM: {
-                N: "-1"
-            }
-        },
-        UpdateExpression: "SET START_TIME_NUM = :now",
-        TableName: "EFSP_NOTES"
+        UpdateExpression: "SET CURRENT_EVENT_NUM = CURRENT_EVENT_NUM + :increment",
+        TableName: "EFSP_EVENTS",
+        ReturnValues: "UPDATED_OLD"
     };
     ddb.updateItem(params, function (err, data) {
         if (err) {
             console.log("error", err);
         }
-    });
-    myUserNum = 0;
-}
-
-function readNotesFromDB(play, un) {
-    console.log("READING w/ usernum = ", myUserNum);
-    var locUn = myUserNum;
-    if (un != undefined) {
-        locUn = un;
-    }
-    var params = {
-        ExpressionAttributeValues: {
-            ":a": { N: locUn.toString() },
-            ":t": { N: new Date().getTime().toString() }
-        },
-        KeyConditionExpression: "USER_NUM = :a and TIME_NUM < :t",
-        ProjectionExpression: "USER_NUM, TIME_NUM, NOTE_HS, NOTE_VOL, NOTE_SAMPLE",
-        TableName: "EFSP_NOTES"
-    };
-
-    ddb.query(params, function (err, data) {
-        if (err) {
-            console.log("error", err);
-        } else {
-            data.Items.forEach(function (element, index, array) {
-                if (play) {
-                    console.log("PLAY = ", play);
-                    playNote(
-                        element.EVENT_NUM.N,
-                        element.EVENT_VOL.N
-                    );
-                }
-
-                removeFromDB(element.USER_NUM.N, element.TIME_NUM.N);
-            });
+        else{
+            console.log("CURRENT_EVENT_NUM UPDATED. OLD = ", data.Attributes.CURRENT_EVENT_NUM.N);
+            writeEventToDB(data.Attributes.CURRENT_EVENT_NUM.N, eventVol);
         }
     });
 }
 
-function playNote(eventNum, eventVol) {
-    console.log("PLAY NOTE", eventNum);
-}
-
-function removeFromDB(userNum, timeNum) {
-    var params = {
-        Key: {
-            USER_NUM: {
-                N: userNum.toString()
-            },
-            TIME_NUM: {
-                N: timeNum.toString()
-            }
-        },
-        TableName: "EFSP_NOTES"
-    };
-
-    ddb.deleteItem(params, function (err, data) {
-        if (err) {
-            console.log("error", err);
-        }
-    });
-}
-
-function putToDB(userNum, timeNum, noteHs, noteVol, noteSample) {
+function writeEventToDB(eventNum, eventVol){
     var params = {
         Item: {
-            USER_NUM: {
-                N: userNum.toString()
+            EVENT_NUM: {
+                N: eventNum.toString()
             },
             TIME_NUM: {
-                N: timeNum.toString()
+                N: new Date().getTime().toString()
             },
-            NOTE_HS: {
-                N: noteHs.toString()
-            },
-            NOTE_VOL: {
-                N: noteVol.toString()
-            },
-            NOTE_SAMPLE: {
-                N: noteSample.toString()
+            EVENT_VOL: {
+                N: eventVol.toString()
             }
         },
-        TableName: "EFSP_NOTES"
+        TableName: "EFSP_EVENTS"
     };
     ddb.putItem(params, function (err, data) {
         if (err) {
@@ -266,3 +265,23 @@ function putToDB(userNum, timeNum, noteHs, noteVol, noteSample) {
         }
     });
 }
+
+function addInstructionsGraphic(){
+    var button = document.createElement("BUTTON");
+    button.id = "instantiateSoundEventButton";
+    button.innerText = "Instantiate Sound Event";
+    button.onclick = instantiateSoundEvent;
+    document.body.appendChild(button);
+
+}
+
+function removeInstructionsGraphic(){
+    document.body.removeChild(document.getElementById("instantiateSoundEventButton"));
+}
+
+
+
+//startPieceLocal();
+
+
+

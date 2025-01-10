@@ -87,6 +87,9 @@ public class Composer {
         }
     }
 
+
+    //preconiditions: must have sound events sorted by activationTime
+    //must have notes sorted by relativeTime
     public static void writeComposition(){
         TextIO.writeFile("composition.txt");
         for(SoundEvent soundEvent: composition){
