@@ -18,7 +18,13 @@ var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 //useLocalDB();
 
-function useLocalDB(){
+//var ddb = new AWS.DynamoDB();//{ apiVersion: "2012-08-10" });
+
+async function useLocalDB(){
+
+    AWS.config.logger = console;
+
+    /*
     AWS.config.credentials = new AWS.Credentials();
     AWS.config.credentials.accessKeyId = "FAKEKEYID";
     AWS.config.credentials.seccretAccessKey = "FAKESECRET";
@@ -28,20 +34,45 @@ function useLocalDB(){
     AWS.config.update({
         region: "FAKEREGION",
         accessKeyId: "FAKEID",
-        seccretAccessKey: "FAKESECRET"
+        seccretAccessKey: "FAKESECRET",
+        endpoint: 'http://localhost:8000'
     });
     var config = AWS.config;
+    ddb = new AWS.DynamoDB();
+    */
     
 
-    var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
-    ddb.endpoint = new AWS.Endpoint("http://localhost:8000");
+     
+    AWS.config.update({
+        endpoint: 'http://localhost:8000', // Default DynamoDB Local endpoint
+        region: 'local', // Dummy region
+        credentials: {
+          accessKeyId: 'dummy',
+          secretAccessKey: 'dummy'
+        }
+    });
 
-    ddb.listTables(function(err, data){
+    ddb = new AWS.DynamoDB({
+        endpoint: 'http://localhost:8000', // Default DynamoDB Local endpoint
+        region: 'local', // Dummy region
+        credentials: {
+          accessKeyId: 'dummy',
+          secretAccessKey: 'dummy'
+        }
+      });
+     
+     
+     //{ apiVersion: "2012-08-10" });
+    //ddb.endpoint = new AWS.Endpoint("http://localhost:8000");
+
+    /*
+    var response = await ddb.listTables(function(err, data){
         if(err)
             console.log(err);
         else
             console.log("TABLE LISTED", data);
-    });
+    }).promise();
+    */
 
     var params = {
         AttributeDefinitions: [
@@ -58,12 +89,14 @@ function useLocalDB(){
         ],
         TableName: "EFSP_EVENTS"
     }
-    ddb.createTable(params,function(err, data){
+    
+    await ddb.createTable(params,function(err, data){
         if(err)
             console.log(err);
         else
             console.log("TABLE CREATED", data);
-    });
+    }).promise();
+    
 }
 
 console.log("hi");

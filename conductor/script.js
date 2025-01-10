@@ -61,7 +61,7 @@ function deleteEventRecord(eventNum){
             button.innerText = "START PIECE";
             button.onclick = startPiece;
             document.body.appendChild(button);
-            checkUsersInterval = setInterval(checkUsers, 0.5);
+            checkUsersInterval = setInterval(checkUsers, 500);
         }
     });
 }
