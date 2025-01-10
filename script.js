@@ -1,6 +1,7 @@
 //This video outlines the extensions needed in VS Code for 
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
 
+
 AWS.config.update({
     region: "us-east-2",
     identityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
@@ -9,8 +10,61 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
     IdentityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
 });
 
+
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
+
+
+
+//useLocalDB();
+
+function useLocalDB(){
+    AWS.config.credentials = new AWS.Credentials();
+    AWS.config.credentials.accessKeyId = "FAKEKEYID";
+    AWS.config.credentials.seccretAccessKey = "FAKESECRET";
+    AWS.config.region = "FAKEREGION";
+    AWS.config.endpoint = new AWS.Endpoint("http://localhost:8000");
+
+    AWS.config.update({
+        region: "FAKEREGION",
+        accessKeyId: "FAKEID",
+        seccretAccessKey: "FAKESECRET"
+    });
+    var config = AWS.config;
+    
+
+    var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
+    ddb.endpoint = new AWS.Endpoint("http://localhost:8000");
+
+    ddb.listTables(function(err, data){
+        if(err)
+            console.log(err);
+        else
+            console.log("TABLE LISTED", data);
+    });
+
+    var params = {
+        AttributeDefinitions: [
+            {
+                AttributeName: "EVENT_NUM",
+                AttributeType: "N"
+            }
+        ],
+        KeySchema: [
+            {
+                AttributeName: "EVENT_NUM",
+                KeyType: "HASH"
+            }
+        ],
+        TableName: "EFSP_EVENTS"
+    }
+    ddb.createTable(params,function(err, data){
+        if(err)
+            console.log(err);
+        else
+            console.log("TABLE CREATED", data);
+    });
+}
 
 console.log("hi");
 
@@ -63,11 +117,12 @@ async function test() {
 //however, it only seems to work once per visit to the
 //site.
 
-resetLocalData() ;
+
 
 let myUserNum = -1;
 let activeSoundEvents = 0;
 let pieceStartTime = -1;
+resetLocalData() ;
 function resetLocalData() {
     myUserNum = -1;
     activeSoundEvents = 0;
