@@ -9,6 +9,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
+ddb = new LocalDDBSimulator();
 
 var userNumText = document.createElement("p");
 userNumText.id = "userNumText";
