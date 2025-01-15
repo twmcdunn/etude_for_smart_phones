@@ -12,6 +12,7 @@ class LocalDBClient {
     async connect(callback){
         var promise = new Promise((resolve,reject) => {
             var myWs = new WebSocket("ws://localhost:8080");
+            this.ws = myWs;
             myWs.onopen = () => {
                 callback();
                 resolve(myWs);
@@ -21,10 +22,10 @@ class LocalDBClient {
               };
         });
         this.ws = await promise;
-        this.ws.addEventListener('message', function (event) {
-            console.log(event.data);
-            this.callbackMap.get(event.data.Id)(event.data.Content.response);
-            this.callbackMap.delete(event.data.Id);
+        this.ws.addEventListener('message',  (event) => {
+            console.log(event);
+            this.callbackMap.get(event.Id.toString())(event.data.Content);
+            this.callbackMap.delete(event.Id);
         });
     }
 

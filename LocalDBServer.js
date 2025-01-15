@@ -10,8 +10,10 @@ in order to work, ws must be installed:
 npm install ws
 */
 
+
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
+
 
 // Importing the required modules
 var WebSocketServer = require('ws');
@@ -233,7 +235,7 @@ var db = new LocalDDBSimulator();
 wss.on("connection", ws => {
     console.log("new client connected");
     // sending message to client
-    ws.send('Welcome, you are connected!');
+    //ws.send('Welcome, you are connected!');
     //on message from client
     ws.on("message", data => {
         console.log("HI");
