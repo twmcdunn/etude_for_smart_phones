@@ -9,12 +9,16 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
-ddb = new LocalDDBSimulator();
+ddb = new LocalDBClient();
+
 
 var userNumText = document.createElement("p");
 userNumText.id = "userNumText";
 document.body.appendChild(userNumText);
-resetDatabase();
+
+
+ddb.connect(resetDatabase);
+//resetDatabase();
 
  function resetDatabase() {
     var params = {

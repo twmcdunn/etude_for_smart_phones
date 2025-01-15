@@ -10,7 +10,21 @@
 const ws = new WebSocket("ws://localhost:8080");
 ws.addEventListener("open", () =>{
   console.log("We are connected");
-  ws.send("How are you?");
+  //ws.send("How are you?");
+  var params = {
+        ExpressionAttributeValues: {
+            ":a": { N: "-1" }
+        },
+        KeyConditionExpression: "EVENT_NUM = :a",
+        ProjectionExpression: "EVENT_NUM,NUM_OF_USERS,CURRENT_EVENT_NUM",
+        TableName: "EFSP_EVENTS"
+    };
+    ws.send(JSON.stringify(
+      {params,
+        Id: "0",
+        callNum: "0"
+      }
+    ));
 });
 ws.addEventListener('message', function (event) {
     console.log(event.data);
