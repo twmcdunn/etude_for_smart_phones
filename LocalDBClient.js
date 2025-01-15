@@ -23,9 +23,11 @@ class LocalDBClient {
         });
         this.ws = await promise;
         this.ws.addEventListener('message',  (event) => {
-            console.log(event);
-            this.callbackMap.get(event.Id.toString())(event.data.Content);
-            this.callbackMap.delete(event.Id);
+            var json = JSON.parse(event.data);
+            console.log(json);
+            var func = this.callbackMap.get(Number(json.Id));
+            func(undefined, json.Content);
+            this.callbackMap.delete(json.Id);
         });
     }
 

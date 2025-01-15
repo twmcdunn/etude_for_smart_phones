@@ -1,17 +1,16 @@
 import sys
-
 #print("HI from python")
 
-match int(sys.argv[1]):
-    case 0:
-        f = open("db.txt", "r")
-        print(f.read())
-    case 1:
-        f = open("db.txt", "w")
-        f.write(sys.argv[2])
-    case 2:
-        f = open("db.txt", "a")
-        f.write(sys.argv[2])
+
+if int(sys.argv[1]) == 0:
+    f = open("db.txt", "r")
+    print(f.read())
+elif  int(sys.argv[1]) == 1:
+    f = open("db.txt", "w")
+    f.write(sys.argv[2])
+elif  int(sys.argv[1]) == 2:
+    f = open("db.txt", "a")
+    f.write(sys.argv[2])
 
 
 def readDB(arg):

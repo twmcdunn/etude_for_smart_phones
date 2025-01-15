@@ -40,7 +40,7 @@ class LocalDDBSimulator {
         child.stdout.on('data', (data) => {
             //console.log("stdout callback function", data.toString());
             const lines = data.toString().split("\n");
-            while(lines[lines.length - 1].length == 0)
+            while(!lines[lines.length - 1].includes("EVENT_NUM"))
                 lines.pop();
             lines.forEach((line) => {
 
@@ -72,7 +72,8 @@ class LocalDDBSimulator {
             //console.log("stdout callback function", data.toString());
             const lines = data.toString().split("\n");
             var dbStr = "";
-            lines.pop();
+            while (!lines[lines.length - 1].includes("EVENT_NUM"))
+                lines.pop();
             lines.forEach((line) => {
 
                 const cells = line.split(",");
@@ -136,7 +137,8 @@ class LocalDDBSimulator {
             //console.log("stdout callback function", data.toString());
             const lines = data.toString().split("\n");
             var dbStr = "";
-            lines.pop();
+            while (!lines[lines.length - 1].includes("EVENT_NUM"))
+                lines.pop();
             lines.forEach((line) => {
 
                 const cells = line.split(",");
