@@ -13,7 +13,8 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
-ddb = new LocalDDBSimulator();
+
+ddb = new LocalDBClient();
 
 
 
@@ -161,7 +162,8 @@ async function test() {
 let myUserNum = -1;
 let activeSoundEvents = 0;
 let pieceStartTime = -1;
-resetLocalData() ;
+ddb.connect(resetLocalData);
+    //resetLocalData() ;
 function resetLocalData() {
     myUserNum = -1;
     activeSoundEvents = 0;
@@ -191,7 +193,7 @@ function updateAndGetUserNum(){
             console.log("error", err);
         }
         else{
-            console.log("USER_NUM_UPDATED. OLD = ", data.Attributes.NUM_OF_USERS.N);
+            console.log("USER_NUM_UPDATED. OLD = ", data.Attributes.NUM_OF_USERS);
             myUserNum = data.Attributes.NUM_OF_USERS.N;
             checkIfStartedInterval = setInterval(checkIfStarted, 1000);
         }

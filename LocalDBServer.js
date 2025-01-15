@@ -64,7 +64,7 @@ class LocalDDBSimulator {
 
     updateItem(params, callback) {
         var dataOut;
-        var Attributes = [];
+        var Attributes = null;
 
 
         var child = spawn('python', ['readFakeDB.py', "0"]);
@@ -82,12 +82,12 @@ class LocalDDBSimulator {
                 var keyMap = new Map(Object.entries(params.Key));
 
                 keyMap.forEach((value, key) => {
-                    if (obj[key.toString()] != value)
+                    if (obj[key.toString()].N != value.N)
                         objMatchesKeys = false;
                 });
 
                 if (objMatchesKeys) {
-                    Attributes.push(obj);
+                    Attributes = obj;
                     obj = structuredClone(obj);
                     var ue = params.UpdateExpression;
                     if (ue.startsWith("SET ")) {
@@ -129,7 +129,7 @@ class LocalDDBSimulator {
 
     deleteItem(params, callback) {
         var dataOut;
-        var Attributes = [];
+        var Attributes = null;
 
 
         var child = spawn('python', ['readFakeDB.py', "0"]);
@@ -160,9 +160,9 @@ class LocalDDBSimulator {
             });
             var child1 = spawn('python', ['readFakeDB.py', "1", dbStr]);
             child1.stdout.on('data', (data) => { });
-            if (Attributes.length == 0)
+            if (Attributes === null)
                 Attributes = undefined;
-            dataOut = { Attributes };
+            dataOut = { Attributes};
             callback(undefined, dataOut);
         });
         return dataOut;

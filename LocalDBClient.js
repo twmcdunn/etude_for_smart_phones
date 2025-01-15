@@ -32,7 +32,6 @@ class LocalDBClient {
     }
 
     query(params, callback) {
-        this.ws.
         this.callbackMap.set(this.id, callback);
         this.ws.send(JSON.stringify(
             {
