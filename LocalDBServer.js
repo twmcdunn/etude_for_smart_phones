@@ -36,11 +36,11 @@ class LocalDDBSimulator {
         var basicBool = precessExpressionAttributeValues(params);
         var Items = [];
 
-        var child = spawn('python', ['readFakeDB.py', "0"]);
+        var child = spawn('python3', ['readFakeDB.py', "0"]);
         child.stdout.on('data', (data) => {
             //console.log("stdout callback function", data.toString());
             const lines = data.toString().split("\n");
-            while(!lines[lines.length - 1].includes("EVENT_NUM"))
+            while (!lines[lines.length - 1].includes("EVENT_NUM"))
                 lines.pop();
             lines.forEach((line) => {
 
@@ -67,7 +67,7 @@ class LocalDDBSimulator {
         var Attributes = null;
 
 
-        var child = spawn('python', ['readFakeDB.py', "0"]);
+        var child = spawn('python3', ['readFakeDB.py', "0"]);
         child.stdout.on('data', (data) => {
             //console.log("stdout callback function", data.toString());
             const lines = data.toString().split("\n");
@@ -119,7 +119,7 @@ class LocalDDBSimulator {
                     dbStr += line + "\n";
                 }
             });
-            var child1 = spawn('python', ['readFakeDB.py', "1", dbStr]);
+            var child1 = spawn('python3', ['readFakeDB.py', "1", dbStr]);
             child1.stdout.on('data', (data) => { });
             dataOut = { Attributes };
             callback(undefined, dataOut);
@@ -132,7 +132,7 @@ class LocalDDBSimulator {
         var Attributes = null;
 
 
-        var child = spawn('python', ['readFakeDB.py', "0"]);
+        var child = spawn('python3', ['readFakeDB.py', "0"]);
         child.stdout.on('data', (data) => {
             //console.log("stdout callback function", data.toString());
             const lines = data.toString().split("\n");
@@ -158,11 +158,11 @@ class LocalDDBSimulator {
                     dbStr += line + "\n";
                 }
             });
-            var child1 = spawn('python', ['readFakeDB.py', "1", dbStr]);
+            var child1 = spawn('python3', ['readFakeDB.py', "1", dbStr]);
             child1.stdout.on('data', (data) => { });
             if (Attributes === null)
                 Attributes = undefined;
-            dataOut = { Attributes};
+            dataOut = { Attributes };
             callback(undefined, dataOut);
         });
         return dataOut;
@@ -175,8 +175,28 @@ class LocalDDBSimulator {
         map.forEach((value, key) => {
             cells.push(key.toString(), value.N.toString());
         });
-        var child1 = spawn('python', ['readFakeDB.py', "2", "\n" + cells.join()]);
+
+        var child = spawn('python3', ['readFakeDB.py', "0"]);
+        child.stdout.on('data', (data) => {
+            //console.log("stdout callback function", data.toString());
+            const lines = data.toString().split("\n");
+            var dbStr = "";
+            while (!lines[lines.length - 1].includes("EVENT_NUM"))
+                lines.pop();
+            lines.forEach((line) => {
+                dbStr += line + "\n";
+            });
+            dbStr += cells.join()  + "\n";
+            var child1 = spawn('python3', ['readFakeDB.py', "1", dbStr]);
+            child1.stdout.on('data', (data) => { });
+        });
+
+        //can't use python's append function because it adds empty lines
+        /*
+        var child1 = spawn('python3', ['readFakeDB.py', "2", "\n" + cells.join()]);
         child1.stdout.on('data', (data) => { });
+        */
+
         callback(undefined, undefined);
 
         return undefined;
@@ -205,21 +225,21 @@ function precessExpressionAttributeValues(params) {
 
     var map = new Map(Object.entries(params.ExpressionAttributeValues));
 
-map.forEach((value, key) => {
-//console.log("key: " + key + " value: " +  value);
-    basicBool = basicBool.replaceAll(key.toString(), value.N.toString());
-});
+    map.forEach((value, key) => {
+        //console.log("key: " + key + " value: " +  value);
+        basicBool = basicBool.replaceAll(key.toString(), value.N.toString());
+    });
 
 
-/*
-    var iterator = map.keys();
-
-    var key = iterator.next().value;
-    while (key != undefined) {
-        basicBool = basicBool.replaceAll(key, map.get(key).N);
-        key = iterator.next().value;
-    }
-        */
+    /*
+        var iterator = map.keys();
+    
+        var key = iterator.next().value;
+        while (key != undefined) {
+            basicBool = basicBool.replaceAll(key, map.get(key).N);
+            key = iterator.next().value;
+        }
+            */
     //console.log(basicBool);
 
     basicBool = basicBool.replaceAll("=", "===");
