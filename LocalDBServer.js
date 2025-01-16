@@ -116,7 +116,7 @@ class LocalDDBSimulator {
                     dbStr += cells.join();
                 }
                 else {
-                    dbStr += line + "\n";
+                    dbStr += line;// + "\n";
                 }
             });
             var child1 = spawn('python3', ['readFakeDB.py', "1", dbStr]);
@@ -155,7 +155,7 @@ class LocalDDBSimulator {
                     Attributes.push(obj);
                 }
                 else {
-                    dbStr += line + "\n";
+                    dbStr += line;// + "\n";
                 }
             });
             var child1 = spawn('python3', ['readFakeDB.py', "1", dbStr]);
@@ -184,9 +184,9 @@ class LocalDDBSimulator {
             while (!lines[lines.length - 1].includes("EVENT_NUM"))
                 lines.pop();
             lines.forEach((line) => {
-                dbStr += line + "\n";
+                dbStr += line;// + "\n";
             });
-            dbStr += cells.join()  + "\n";
+            dbStr += cells.join();//  + "\n";
             var child1 = spawn('python3', ['readFakeDB.py', "1", dbStr]);
             child1.stdout.on('data', (data) => { });
         });
