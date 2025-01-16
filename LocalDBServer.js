@@ -152,7 +152,7 @@ class LocalDDBSimulator {
                 });
 
                 if (objMatchesKeys) {
-                    Attributes.push(obj);
+                    Attributes = obj;
                 }
                 else {
                     dbStr += line;// + "\n";
@@ -255,15 +255,15 @@ var db = new LocalDDBSimulator();
 
 // Creating connection using websocket
 wss.on("connection", ws => {
-    console.log("new client connected");
+    //Console.log("new client connected");
     // sending message to client
     //ws.send('Welcome, you are connected!');
     //on message from client
     ws.on("message", data => {
-        console.log("HI");
-        console.log(`Client has sent us: ${data}`);
+        //Console.log("HI");
+        //Console.log(`Client has sent us: ${data}`);
         var json = JSON.parse(data);
-        console.log("WE've PARSED ", json);
+        //Console.log("WE've PARSED ", json);
 
         var callback = function (err, response) {
             //console.log("returning response", response)
@@ -289,11 +289,11 @@ wss.on("connection", ws => {
     });
     // handling what to do when clients disconnects from server
     ws.on("close", () => {
-        console.log("the client has disconnected");
+        //Console.log("the client has disconnected");
     });
     // handling client connection error
     ws.onerror = function () {
-        console.log("Some Error occurred")
+        //Console.log("Some Error occurred")
     }
 });
-console.log("The WebSocket server is running on port 8080");
+//console.log("The WebSocket server is running on port 8080");

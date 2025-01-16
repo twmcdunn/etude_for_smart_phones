@@ -24,7 +24,7 @@ class LocalDBClient {
         this.ws = await promise;
         this.ws.addEventListener('message',  (event) => {
             var json = JSON.parse(event.data);
-            console.log(json);
+            //console.log(json);
             var func = this.callbackMap.get(Number(json.Id));
             func(undefined, json.Content);
             this.callbackMap.delete(json.Id);
