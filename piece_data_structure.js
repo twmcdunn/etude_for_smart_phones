@@ -50,11 +50,22 @@ function readComposition(userNum, totUsers, callback) {
                         n += 6;
                     }
                     soundEvents.push(event);
-                    if(event.userNum % Number(totUsers) === Number(userNum)){
+                    if(Number(event.userNum) % Number(totUsers) === Number(userNum)){
+                        /*
+                        console.log("claiming sound event,\n    num: " + Number(event.userNum) 
+                        + "\n    my user num: " + userNum + "\n    totUsers: " +  Number(totUsers));
+                            */
                         mySoundEvents.push(event);
                     }
                 }
             }
+
+            /*//sorting shouldn't be neccessary, events are stored in chronological order
+            mySoundEvents.sort((a, b) => {
+                return Number(a.activationTime) - Number(b.activationTime);
+            });
+*/
+            
             if(callback != undefined){
                 callback();
             }

@@ -52,7 +52,7 @@ class LocalDDBSimulator {
             var value = eval(refinedBool);
             if (value)
                 Items.push(item);
-            dataOut = { Items };
+            dataOut = { Items, "Count": Items.length };
             callback(undefined, dataOut);
         });
         return dataOut;
@@ -129,6 +129,8 @@ class LocalDDBSimulator {
                 Attributes = item;
             }
         });
+        this.dataBase = this.dataBase.filter((item) => item != Attributes);
+
         dataOut = { Attributes };
         callback(undefined, dataOut);
         return dataOut;

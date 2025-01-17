@@ -6,7 +6,7 @@ public class Composer {
     public static double f2 = 2077;
     public static WaveWriter ww = new WaveWriter("mockup");
     public static double c0Freq = 440 * Math.pow(2, 3/12.0) * Math.pow(2, -5);
-    public static int user = 0, event = 0;
+    public static int user = 0, event = 0, eventUser = 0;
     public static Sequencer seq = new Sequencer(3);
 
     public static void main(String[] args) {
@@ -14,11 +14,48 @@ public class Composer {
     }
 
     public Composer(){
+
+        double time = 3;
+        //  15 sec of chords
         for(int i = 0; i < 6; i++){
-        int[][] chords = seq.getChords();
-        basicChord(chords[0], 3 + i * 3, 6);
-        basicChord(chords[1], 6 + i * 3, 6);
+            int[][] chords = seq.getChords();
+            basicChord(chords[0], time, 6);
+            basicChord(chords[1], time + 3, 6);
+            time += 3;
         }
+
+        time += 12; // 12 seconds to breath
+
+        //15 sec of chords in 2 voices
+        for(int i = 0; i < 6; i++){
+            int[][] chords = seq.getChords();
+            basicChord(chords[0], time, 6);
+            basicChord(chords[0], time, 5);
+
+            basicChord(chords[1], time + 3, 6);
+            basicChord(chords[1], time + 3, 5);
+            time += 3;
+        }
+
+        time += 12; // 12 seconds to breath
+
+        //15 sec of chords in 2 voices
+        for(int i = 0; i < 6; i++){
+            int[][] chords = seq.getChords();
+
+            basicChord(chords[0], time, 7);
+            basicChord(chords[0], time, 6);
+            basicChord(chords[0], time, 5);
+
+            basicChord(chords[1], time + 3, 7);
+            basicChord(chords[1], time + 3, 6);
+            basicChord(chords[1], time + 3, 5);
+            time += 3;
+        }
+
+
+
+        System.out.println(seq.myGame);
         writeComposition();
         recordComposition();
     }
@@ -27,8 +64,9 @@ public class Composer {
         double dur = 0.05;
         double relVol = 1;
         double relTime = 0;
-        SoundEvent soundEvent = new SoundEvent(event,(int)Math.rint(time * 1000),user);
-        user++;
+        SoundEvent soundEvent = new SoundEvent(event,(int)Math.rint(time * 1000),eventUser);
+        eventUser++;
+        //user++;
 
         int[] c1 = new int[chord.length];
         for(int i = 0; i < chord.length; i++){
@@ -41,10 +79,15 @@ public class Composer {
             melody[i + c1.length] = c2[i];
         }
         while(relTime < 12){
+            int u = user;
+            if(relTime == 0)
+                u = eventUser;//first note goes to person triggering the event
             Note note = new Note(melody[user % melody.length],//chord[(int)(Math.random() * chord.length)] + 20 * oct,
-             (int)Math.rint(1000 * relTime), relVol,1 , user);
+             (int)Math.rint(1000 * relTime), relVol,1 , 
+             u);
             soundEvent.add(note);
-             user++;
+            if(relTime != 0)
+                user++;
             relTime += dur;
             dur *= 1.01;
             relVol *= 0.95;

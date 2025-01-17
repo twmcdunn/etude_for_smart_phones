@@ -165,10 +165,17 @@ let pieceStartTime = -1;
 ddb.connect(resetLocalData);
     //resetLocalData() ;
 function resetLocalData() {
+    //alert("I'm gonna need to play sound from your phone.\nIf this is cool with you, please turn the volume \nall the way up and click ok.");
     myUserNum = -1;
     activeSoundEvents = 0;
     pieceStartTime = -1;
-    updateAndGetUserNum();
+
+    var button = document.createElement("BUTTON");
+    button.id = "start";
+    button.innerText = "Start";
+    button.onclick = updateAndGetUserNum;
+    document.body.appendChild(button);
+
 }
 
 var checkIfStartedInterval = -1;
@@ -258,12 +265,12 @@ var eventListenerInterval = -1;
 function scheduleEventListener(){//"Even listeners" are really home grown
     //listen at regular intervals a little smaller than the relative time of the next note to play
    // var now = new Date().getTime();
-    var t = Math.max(myNotes[0].relativeTime - 500, 50)
+    var t = Math.max(Number(myNotes[0].relativeTime) - 500, 50)
     eventListenerInterval = setInterval(listenForEvent, t);
 }
 
 function listenForEvent(){
-    var eventNum = myNotes[0].parentEventNum;
+    var eventNum = Number(myNotes[0].parentEventNum);
     var params = {
         ExpressionAttributeValues: {
             ":a": { N: eventNum.toString() }
@@ -289,16 +296,39 @@ function scheduleNotes(eventNum, eventTime, eventVol){
     clearInterval(eventListenerInterval);
     while(myNotes.length > 0 && myNotes[0].parentEventNum === eventNum){
         let note = myNotes.shift();
+        console.log("EVENT TIME: " + (eventTime));
+        console.log("RELATIVE TIME : " + (note.relativeTime));
+        console.log("now: " + (new Date().getTime()));
+
+        console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
         noteIntervals.push(setInterval(function(){
             clearInterval(noteIntervals.shift());
             playNote(note.hs, note.relativeVol * eventVol, note.sampleNum);
-        }, eventTime + note.relativeTime - new Date().getTime()));
+        }, Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
     }    
     scheduleEventListener();
 }
 
+var c0Freq = 440 * (2**(3/12)) * (2 ** -5);
+var refFreqs = [2077];
+var sounds = [];
+for(let n = 1; n <= 1; n++){//n is sample num
+    var soundArr = [];
+    for(let i = 0; i < 20; i++){
+        soundArr.push(new Audio("./" + n + ".wav"));
+    }
+    sounds.push(soundArr);
+}
+var sound = new Audio("./" + 1 + ".wav");
 function playNote(hs,vol,sampleNum){
     console.log("PLAY NOTE ", hs, vol, sampleNum);
+    //c0Freq * Math.pow(2, note.hs/20.0)
+    var sound = sounds[sampleNum - 1].pop();
+    sound.preservesPitch = false;
+    sound.playbackRate = (c0Freq * (2 ** (hs/20.0))) / refFreqs[sampleNum - 1];
+    sound.volume = vol * 0.1;
+    sound.play();
+    sounds[sampleNum - 1].push(new Audio("./" + sampleNum + ".wav"));
 }
 
 function activateSoundEvent(){
@@ -373,8 +403,9 @@ function addInstructionsGraphic(){
 
 }
 
+
 function removeInstructionsGraphic(){
-    document.body.removeChild(document.getElementById("instantiateSoundEventButton"));
+    document.body.removeChild(document.body.getElementById("instantiateSoundEventButton"));
 }
 
 

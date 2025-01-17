@@ -195,7 +195,10 @@ public class Sequencer {
                 // currentGame.notUsed(transformed) &&
                 !currentGame.getLastBoard().contains(transformed) &&
                         ((notTelos(transformed) && currentGame.size() < GAME_LENGTH - 1) ||
-                                (telos == null || !notTelos(transformed) && currentGame.size() == GAME_LENGTH - 1))) {
+                                (telos == null || !notTelos(transformed) && currentGame.size() == GAME_LENGTH - 1))
+                                
+                                
+                                ) {
                     for (Board b : incompleteBoards) {
                         if (b.contains(transformed))
                             continue;
@@ -257,6 +260,7 @@ public class Sequencer {
     }
 
     public int[][] getChords() {
+        int minAllowedSynt = 3;
 
         ArrayList<Board> allPossibleMoves = getAllPossibleMoves(myGame);
         ArrayList<Game> allPossibleGames = new ArrayList<Game>();
@@ -265,6 +269,9 @@ public class Sequencer {
         // the game
         int bestChordPop = Integer.MAX_VALUE;
         for (Board move : allPossibleMoves) {
+            if (move.getMinSyntacticDistance() < minAllowedSynt ||
+                    myGame.get(myGame.size() - 1).get(move.size() - 1).findShortestPath(move.get(0)) < minAllowedSynt)
+                continue;
             Game game = new Game(myGame, this);
             game.makeMove(move);
             allPossibleGames.add(game);
