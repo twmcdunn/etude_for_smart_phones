@@ -1,7 +1,7 @@
-public class Note {
-    int hs, relativeTime, sampleNum, userNum;
-    double relativeVol;
-    Note(int hs, int relativeTime, double relativeVol, int sampleNum, int userNum) {
+public class Note {//changed hs to double
+    int relativeTime, sampleNum, userNum;
+    double relativeVol, hs;
+    Note(double hs, int relativeTime, double relativeVol, int sampleNum, int userNum) {
         this.hs = hs;
         this.relativeTime = relativeTime;
         this.relativeVol = relativeVol;

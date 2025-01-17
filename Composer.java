@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Composer {
     public static ArrayList<SoundEvent> composition = new ArrayList<SoundEvent>();
@@ -16,40 +18,70 @@ public class Composer {
     public Composer(){
 
         double time = 3;
-        //  15 sec of chords
+        int[][] chords1 = seq.getChords();
+            basicChord(chords1[0], time, 6, new double[]{0},0);
+            basicChord(chords1[1], time + 3, 6, new double[]{0},0);
+        
+        time += 12; //12 seconds to breath
+        //  18 sec of chords
         for(int i = 0; i < 6; i++){
             int[][] chords = seq.getChords();
-            basicChord(chords[0], time, 6);
-            basicChord(chords[1], time + 3, 6);
+            basicChord(chords[0], time, 6, new double[]{0},0);
+            basicChord(chords[1], time + 3, 6, new double[]{0},0);
             time += 3;
         }
 
         time += 12; // 12 seconds to breath
 
-        //15 sec of chords in 2 voices
+        //18 sec of chords in 2 octaves (unison)
         for(int i = 0; i < 6; i++){
             int[][] chords = seq.getChords();
-            basicChord(chords[0], time, 6);
-            basicChord(chords[0], time, 5);
+            basicChord(chords[0], time, 6, new double[]{0,-1}, i / 3);
 
-            basicChord(chords[1], time + 3, 6);
-            basicChord(chords[1], time + 3, 5);
+            basicChord(chords[1], time + 3, 6, new double[]{0,-1}, i / 3);
             time += 3;
         }
 
         time += 12; // 12 seconds to breath
 
-        //15 sec of chords in 2 voices
+        //18 sec of chords in 3 octaves (unison)
         for(int i = 0; i < 6; i++){
             int[][] chords = seq.getChords();
 
-            basicChord(chords[0], time, 7);
-            basicChord(chords[0], time, 6);
-            basicChord(chords[0], time, 5);
+            basicChord(chords[0], time, 6, new double[]{0,-1,1}, 1 + i / 3);
 
-            basicChord(chords[1], time + 3, 7);
-            basicChord(chords[1], time + 3, 6);
-            basicChord(chords[1], time + 3, 5);
+            basicChord(chords[1], time + 3, 6, new double[]{0,-1,1}, 1 + i / 3);
+
+            time += 3;
+        }
+
+        //18 sec of chords in 3 voices
+        for(int i = 0; i < 6; i++){
+            int[][] chords = seq.getChords();
+            for (int n = 0; n < 3; n++) {
+                basicChord(chords[0], time, 5, new double[] { n }, 2 + i / 3);
+                basicChord(chords[1], time + 3, 5, new double[] { n }, 2 + i / 3);
+            }
+            time += 3;
+        }
+
+                // 18 sec of chords in 7 voices
+        for (int i = 0; i < 6; i++) {
+            int[][] chords = seq.getChords();
+            for (int n = 0; n < 7; n++) {
+                basicChord(chords[0], time, 4, new double[] { n }, n % 4);
+                basicChord(chords[1], time + 3, 4, new double[] { n }, n % 4);
+            }
+            time += 3;
+        }
+
+         // 18 sec of chords in 7 voices w/ planing triads
+         for (int i = 0; i < 6; i++) {
+            int[][] chords = seq.getChords();
+            for (int n = 0; n < 7; n++) {
+                basicChord(chords[0], time, 4, new double[] { n, n + 4 / 12.0, n + 7 / 12.0}, n % 4);
+                basicChord(chords[1], time + 3, 4, new double[] { n, n + 3 / 12.0, n + 7 / 12.0 }, n % 4);
+            }
             time += 3;
         }
 
@@ -60,7 +92,7 @@ public class Composer {
         recordComposition();
     }
 
-    public static void basicChord(int[] chord, double time, int oct){
+    public static void basicChord(int[] chord, double time, int oct, double[] doublingOcts, int arpSetting){
         double dur = 0.05;
         double relVol = 1;
         double relTime = 0;
@@ -69,25 +101,79 @@ public class Composer {
         //user++;
 
         int[] c1 = new int[chord.length];
+        ArrayList<Integer> c1ArrayList = new ArrayList<Integer>();
         for(int i = 0; i < chord.length; i++){
             c1[i] = chord[i] + 20 * oct;
+            c1ArrayList.add(c1[i]);
         }
+
+        
+
         int[] c2 = chordComplement(c1, c1, 20);
+
+        ArrayList<Integer> c2ArrayList = new ArrayList<Integer>();
+        for(int i = 0; i < chord.length; i++){
+            c2ArrayList.add(c2[i]);
+        }
+
+        switch(arpSetting){
+            case 1://descending
+        Collections.sort(c1ArrayList, new Comparator<Integer>() {
+            public int compare(Integer a, Integer b){
+                return b - a;
+            }
+        });
+        Collections.sort(c2ArrayList, new Comparator<Integer>() {
+            public int compare(Integer a, Integer b){
+                return b - a;
+            }
+        });
+        for(int i = 0; i < chord.length; i++){
+            c1[i] = c1ArrayList.get(i);
+            c2[i] = c2ArrayList.get(i);
+        }
+        break;
+        case 2://ascending
+        Collections.sort(c1ArrayList);
+        Collections.sort(c2ArrayList);
+        for(int i = 0; i < chord.length; i++){
+            c1[i] = c1ArrayList.get(i);
+            c2[i] = c2ArrayList.get(i);
+        }
+        break;
+        case 3://up and then down
+        Collections.sort(c1ArrayList);
+        Collections.sort(c2ArrayList);
+        c1 = new int[c1.length * 2];
+        c2 = new int[c2.length * 2];
+        for(int i = 0; i < chord.length; i++){
+            c1[i] = c1ArrayList.get(i);
+            c2[i] = c2ArrayList.get(i);
+        }
+        for(int i = 0; i < chord.length; i++){//also switch voices on way down
+            c1[i + c1.length / 2] = c2ArrayList.get(c1ArrayList.size() - 1 - i);
+            c2[i + c1.length / 2] = c1ArrayList.get(c1ArrayList.size() - 1 - i);
+        }
+        break;
+    }
+
         int[] melody = new int[c1.length * 2];
         for(int i = 0; i < c1.length; i++){
             melody[i] = c1[i];
             melody[i + c1.length] = c2[i];
         }
         while(relTime < 12){
+            for(double dbleOct: doublingOcts){
             int u = user;
             if(relTime == 0)
                 u = eventUser;//first note goes to person triggering the event
-            Note note = new Note(melody[user % melody.length],//chord[(int)(Math.random() * chord.length)] + 20 * oct,
+            Note note = new Note(melody[user % melody.length] + 20 * dbleOct,//chord[(int)(Math.random() * chord.length)] + 20 * oct,
              (int)Math.rint(1000 * relTime), relVol,1 , 
              u);
             soundEvent.add(note);
             if(relTime != 0)
                 user++;
+            }
             relTime += dur;
             dur *= 1.01;
             relVol *= 0.95;
@@ -96,9 +182,10 @@ public class Composer {
         event++;
     }
 
+    // assume audience members might vary their responses by about 30 seconds
     public static void recordComposition(){
         for(SoundEvent soundEvent: composition){
-            double eventTime = soundEvent.activationTime / 1000.0 + 3 * Math.random();
+            double eventTime = soundEvent.activationTime / 1000.0 + 30 * Math.random();
             double eventVol = Math.random() * 0.5 + 0.5;
             for(Note note: soundEvent.notes){
                 recordNote(c0Freq * Math.pow(2, note.hs/20.0), eventTime + note.relativeTime / 1000.0, eventVol * note.relativeVol);
