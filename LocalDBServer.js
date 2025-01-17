@@ -32,10 +32,10 @@ class LocalDDBSimulator {
     constructor() {
         this.dataBase = [];
         this.dataBase.push(Object.fromEntries([
-            ["EVENT_NUM", -1],
-            ["CURRENT_EVENT_NUM", 0],
-            ["NUM_OF_USERS", 0],
-            ["PIECE_START_TIME", -1]
+            ["EVENT_NUM", {N:-1}],
+            ["CURRENT_EVENT_NUM", {N:0}],
+            ["NUM_OF_USERS", {N:0}],
+            ["PIECE_START_TIME", {N:-1}]
         ]));
     }
 
@@ -64,6 +64,7 @@ class LocalDDBSimulator {
 
         var keyMap = new Map(Object.entries(params.Key));
 
+        var ue = params.UpdateExpression;
 
         this.dataBase.forEach((item) => {
             var objMatchesKeys = true;
@@ -79,7 +80,7 @@ class LocalDDBSimulator {
                 callback(undefined, dataOut);
 
                 if (ue.startsWith("SET ")) {
-                    var itemMap = new Map(item);
+                    var itemMap = new Map(Object.entries(item));
                     ue = ue.replace("SET ", "");
                     var eavMap = new Map(Object.entries(params.ExpressionAttributeValues));
                     eavMap.forEach((value, key) => {
@@ -88,11 +89,11 @@ class LocalDDBSimulator {
                     var setStatements = ue.split(",");
                     itemMap.forEach((value, key) => {
                         setStatements.forEach((setStatement) => {
-                            if (setStatement.startsWith(cells[n])) {
+                            if (setStatement.startsWith(key)) {
                                 //perform opperation
                                 var str = "let " + key + " = " + value.N +
                                     ";\n" + setStatement +
-                                    ";\nitemMap[key] = " + cells[n];
+                                    ";\item[key].N = " + key;
                                 eval(str);
                                 //assignRessult
                             }
@@ -134,7 +135,7 @@ class LocalDDBSimulator {
     }
 
     putItem(params, callback) {
-        this.dataBase.push(Object.entries(params.Item));
+        this.dataBase.push(params.Item);
 
         callback(undefined, undefined);
 
