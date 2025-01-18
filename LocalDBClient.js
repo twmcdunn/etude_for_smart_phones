@@ -11,7 +11,7 @@ class LocalDBClient {
 
     async connect(callback){
         var promise = new Promise((resolve,reject) => {
-            var myWs = new WebSocket("ws://localhost:8080");
+            var myWs = new WebSocket("ws://10.0.0.170:8080");//"ws://localhost:8080");
             this.ws = myWs;
             myWs.onopen = () => {
                 callback();
