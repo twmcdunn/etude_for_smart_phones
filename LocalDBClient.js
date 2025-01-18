@@ -19,7 +19,12 @@ class LocalDBClient {
               };
               myWs.onerror = (error) => {
                 console.log(error);
-                document.body.innerText = "ERROR: " + error;
+                var map = new Map(Object.entries(error));
+                var log = ""
+                map.forEach((value,key) => {
+                    log += key + ": " + value;
+                });
+                document.body.innerText = "ERROR: " + log;
                 reject(error);
               };
         });
