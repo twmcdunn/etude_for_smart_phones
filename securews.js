@@ -12,8 +12,8 @@ var Websocket = require('ws').server;
 
 
 const server = https.createServer({
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+  key: fs.readFileSync('/Users/maestro/key.pem'),
+  cert: fs.readFileSync('/Users/maestro/cert.pem')
 }, (req, res) => {
     //res.writeHead(200);
     //res.end('hello world\n');
