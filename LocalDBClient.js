@@ -19,6 +19,7 @@ class LocalDBClient {
               };
               myWs.onerror = (error) => {
                 console.log(error);
+                document.body.innerText = "ERROR: " + error;
                 reject(error);
               };
         });
