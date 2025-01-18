@@ -24,7 +24,7 @@ class LocalDBClient {
                 map.forEach((value,key) => {
                     log += key + ": " + value;
                 });
-                document.body.innerText = "ERROR: " + log;
+                document.body.innerText = "ERROR log: " + log;
                 reject(error);
               };
         });
