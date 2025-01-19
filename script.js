@@ -130,7 +130,15 @@ function queueSounds() {
     for (let n = 1; n <= 1; n++) {//n is sample num
         var soundArr = [];
         for (let i = 0; i < 20; i++) {
-            soundArr.push(new Audio("./" + n + ".wav"));
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', n + '.mp3', true);
+            xhr.responseType = 'blob';
+            var audio = new Audio();
+            xhr.onload = function () {
+                audio.src = URL.createObjectURL(xhr.response);
+            };
+            xhr.send();
+            soundArr.push(audio);
         }
         sounds.push(soundArr);
     }
