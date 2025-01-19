@@ -126,14 +126,14 @@ function updateAndGetUserNum(){
 var c0Freq = 440 * (2**(3/12)) * (2 ** -5);
 var refFreqs = [2077];
 var sounds = [];
-function queueSounds(){
-for(let n = 1; n <= 1; n++){//n is sample num
-    var soundArr = [];
-    for(let i = 0; i < 20; i++){
-        soundArr.push(new Audio("./" + n + ".wav"));
+function queueSounds() {
+    for (let n = 1; n <= 1; n++) {//n is sample num
+        var soundArr = [];
+        for (let i = 0; i < 20; i++) {
+            soundArr.push(new Audio("./" + n + ".wav"));
+        }
+        sounds.push(soundArr);
     }
-    sounds.push(soundArr);
-}
 }
 
 
