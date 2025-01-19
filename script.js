@@ -1,6 +1,6 @@
 //This video outlines the extensions needed in VS Code for 
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
-
+var local = false;
 
 AWS.config.update({
     region: "us-east-2",
@@ -14,97 +14,8 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
-ddb = new LocalDBClient();
-
-
-
-//useLocalDB();
-
-//var ddb = null;//new AWS.DynamoDB();//{ apiVersion: "2012-08-10" });
-
-async function useLocalDB(){
-
-    AWS.config.logger = console;
-
-    /*
-    AWS.config.credentials = new AWS.Credentials();
-    AWS.config.credentials.accessKeyId = "FAKEKEYID";
-    AWS.config.credentials.seccretAccessKey = "FAKESECRET";
-    AWS.config.region = "FAKEREGION";
-    AWS.config.endpoint = new AWS.Endpoint("http://localhost:8000");
-
-    AWS.config.update({
-        region: "FAKEREGION",
-        accessKeyId: "FAKEID",
-        seccretAccessKey: "FAKESECRET",
-        endpoint: 'http://localhost:8000'
-    });
-    var config = AWS.config;
-    ddb = new AWS.DynamoDB();
-    */
-    
-
-     
-    AWS.config.update({
-        endpoint: 'http://localhost:8000', // Default DynamoDB Local endpoint
-        region: 'local', // Dummy region
-
-        accessKeyId: 'dummy',
-        secretAccessKey: 'dummy',
-        credentials: {
-          accessKeyId: 'dummy',
-          secretAccessKey: 'dummy'
-        }
-    });
-
-    ddb = new AWS.DynamoDB({
-        endpoint: 'http://localhost:8000', // Default DynamoDB Local endpoint
-        region: 'local', // Dummy region
-        accessKeyId: 'dummy',
-        secretAccessKey: 'dummy',
-        credentials: {
-          accessKeyId: 'dummy',
-          secretAccessKey: 'dummy'
-        }
-      });
-     
-     
-     //{ apiVersion: "2012-08-10" });
-    //ddb.endpoint = new AWS.Endpoint("http://localhost:8000");
-
-    /*
-    var response = await ddb.listTables(function(err, data){
-        if(err)
-            console.log(err);
-        else
-            console.log("TABLE LISTED", data);
-    }).promise();
-    */
-
-    var params = {
-        AttributeDefinitions: [
-            {
-                AttributeName: "EVENT_NUM",
-                AttributeType: "N"
-            }
-        ],
-        KeySchema: [
-            {
-                AttributeName: "EVENT_NUM",
-                KeyType: "HASH"
-            }
-        ],
-        TableName: "EFSP_EVENTS"
-    }
-    
-    await ddb.createTable(params,function(err, data){
-        if(err)
-            console.log(err);
-        else
-            console.log("TABLE CREATED", data);
-    }).promise();
-    
-}
+if(local)
+    ddb = new LocalDBClient();
 
 console.log("hi");
 
@@ -162,8 +73,12 @@ async function test() {
 let myUserNum = -1;
 let activeSoundEvents = 0;
 let pieceStartTime = -1;
-ddb.connect(resetLocalData);
-    //resetLocalData() ;
+
+if (local)
+    ddb.connect(resetLocalData);
+else
+    resetLocalData();
+
 function resetLocalData() {
     //alert("I'm gonna need to play sound from your phone.\nIf this is cool with you, please turn the volume \nall the way up and click ok.");
     myUserNum = -1;

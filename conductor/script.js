@@ -1,3 +1,5 @@
+var local = false;
+
 AWS.config.update({
     region: "us-east-2",
     identityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
@@ -9,21 +11,23 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
-ddb = new LocalDBClient();
+if(local)
+    ddb = new LocalDBClient();
 
 
 var userNumText = document.createElement("p");
 userNumText.id = "userNumText";
 document.body.appendChild(userNumText);
 
+if (local)
+    ddb.connect(resetDatabase);
+else
+    resetDatabase();
 
-ddb.connect(resetDatabase);
-//resetDatabase();
-
- function resetDatabase() {
+function resetDatabase() {
     var params = {
         ExpressionAttributeValues: {
-            ":zero": { N: "0"},
+            ":zero": { N: "0" },
             ":negOne": { N: "-1"}
         },
         Key: {
