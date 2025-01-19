@@ -1,6 +1,6 @@
 //This video outlines the extensions needed in VS Code for 
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
-import {Howl, Howler} from 'howler';
+
 
 var local = false;
 
@@ -133,7 +133,7 @@ function queueSounds() {
         var soundArr = [];
         for (let i = 0; i < 20; i++) {
             var audio = new Howl({
-                src: [n + '.mp3']
+                src: ['./' + n + '.mp3']
             });
             soundArr.push(audio);
         }
