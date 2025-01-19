@@ -95,6 +95,7 @@ function resetLocalData() {
 
 var checkIfStartedInterval = -1;
 function updateAndGetUserNum(){
+    queueSounds();
     var params = {
         ExpressionAttributeValues: {
             ":increment": { N: "1" }
@@ -120,6 +121,19 @@ function updateAndGetUserNum(){
             checkIfStartedInterval = setInterval(checkIfStarted, 1000);
         }
     });
+
+}
+var c0Freq = 440 * (2**(3/12)) * (2 ** -5);
+var refFreqs = [2077];
+var sounds = [];
+function queueSounds(){
+for(let n = 1; n <= 1; n++){//n is sample num
+    var soundArr = [];
+    for(let i = 0; i < 20; i++){
+        soundArr.push(new Audio("./" + n + ".wav"));
+    }
+    sounds.push(soundArr);
+}
 }
 
 
@@ -224,17 +238,7 @@ function scheduleNotes(eventNum, eventTime, eventVol){
     scheduleEventListener();
 }
 
-var c0Freq = 440 * (2**(3/12)) * (2 ** -5);
-var refFreqs = [2077];
-var sounds = [];
-for(let n = 1; n <= 1; n++){//n is sample num
-    var soundArr = [];
-    for(let i = 0; i < 20; i++){
-        soundArr.push(new Audio("./" + n + ".wav"));
-    }
-    sounds.push(soundArr);
-}
-var sound = new Audio("./" + 1 + ".wav");
+
 function playNote(hs,vol,sampleNum){
     console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
