@@ -1,7 +1,7 @@
 //This video outlines the extensions needed in VS Code for 
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
 
-
+//const {Howl, Howler} = require('howler');
 var local = false;
 
 AWS.config.update({
