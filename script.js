@@ -7,7 +7,7 @@
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const {Howl, Howler} = require('howler');
-*/ 
+*/
 
 // Importing the required modules
 
@@ -25,7 +25,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 // Create DynamoDB service object
 var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
-if(local)
+if (local)
     ddb = new LocalDBClient();
 
 console.log("hi");
@@ -105,7 +105,7 @@ function resetLocalData() {
 }
 
 var checkIfStartedInterval = -1;
-function updateAndGetUserNum(){
+function updateAndGetUserNum() {
     queueSounds();
     var params = {
         ExpressionAttributeValues: {
@@ -122,11 +122,11 @@ function updateAndGetUserNum(){
     };
     ddb.updateItem(params, function (err, data) {
         //document.writeln("RESULT", data.Items[0].element.NUM_OF_USERS.N);
-        
+
         if (err) {
             console.log("error", err);
         }
-        else{
+        else {
             console.log("USER_NUM_UPDATED. OLD = ", data.Attributes.NUM_OF_USERS);
             myUserNum = data.Attributes.NUM_OF_USERS.N;
             checkIfStartedInterval = setInterval(checkIfStarted, 1000);
@@ -134,7 +134,7 @@ function updateAndGetUserNum(){
     });
 
 }
-var c0Freq = 440 * (2**(3/12)) * (2 ** -5);
+var c0Freq = 440 * (2 ** (3 / 12)) * (2 ** -5);
 var refFreqs = [2077];
 var sounds = [];
 var audioContext = new AudioContext();
@@ -148,18 +148,18 @@ function queueSounds() {
             //audio.play();
             //audio.load();
             var track = audioContext.createMediaElementSource(audio);
-      track.connect(audioContext.destination);
+            track.connect(audioContext.destination);
             soundArr.push(audio);
         }
         sounds.push(soundArr);
     }
     if (audioContext.state === "suspended") {
         audioContext.resume();
-      }
+    }
 }
 
 
-function checkIfStarted(){
+function checkIfStarted() {
     var params = {
         ExpressionAttributeValues: {
             ":a": { N: "-1" }
@@ -172,7 +172,7 @@ function checkIfStarted(){
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
-        } else if(data.Items[0].PIECE_START_TIME.N != -1){
+        } else if (data.Items[0].PIECE_START_TIME.N != -1) {
             clearInterval(checkIfStartedInterval);
             pieceStartTime = data.Items[0].PIECE_START_TIME.N;
             startPiece();
@@ -180,7 +180,7 @@ function checkIfStarted(){
     });
 }
 
-function startPiece(){
+function startPiece() {
     var params = {
         ExpressionAttributeValues: {
             ":a": { N: "-1" }
@@ -193,8 +193,8 @@ function startPiece(){
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
-        } else{
-            readComposition(myUserNum, data.Items[0].NUM_OF_USERS.N, function(){
+        } else {
+            readComposition(myUserNum, data.Items[0].NUM_OF_USERS.N, function () {
                 scheduleEventActivations();
                 scheduleEventListener();
             });
@@ -204,8 +204,8 @@ function startPiece(){
 
 //allows this user to instantiate an event
 var eventActivationIntervals = [];
-function scheduleEventActivations(){
-    mySoundEvents.forEach(function(event){
+function scheduleEventActivations() {
+    mySoundEvents.forEach(function (event) {
         eventActivationIntervals.push(setInterval(activateSoundEvent, pieceStartTime + event.activationTime - new Date().getTime()));
     });
 }
@@ -213,14 +213,14 @@ function scheduleEventActivations(){
 //allows this user to schedule his child notes of an
 //event written to the database
 var eventListenerInterval = -1;
-function scheduleEventListener(){//"Even listeners" are really home grown
+function scheduleEventListener() {//"Even listeners" are really home grown
     //listen at regular intervals a little smaller than the relative time of the next note to play
-   // var now = new Date().getTime();
+    // var now = new Date().getTime();
     var t = Math.max(Number(myNotes[0].relativeTime) - 500, 50)
     eventListenerInterval = setInterval(listenForEvent, t);
 }
 
-function listenForEvent(){
+function listenForEvent() {
     var eventNum = Number(myNotes[0].parentEventNum);
     var params = {
         ExpressionAttributeValues: {
@@ -234,51 +234,52 @@ function listenForEvent(){
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
-        } else if(data.Count > 0){
+        } else if (data.Count > 0) {
             //since this method pops all notes that are children of the event
             //there will be no duplicate invocations
-            scheduleNotes(eventNum, data.Items[0].TIME_NUM.N,data.Items[0].EVENT_VOL.N);
+            scheduleNotes(eventNum, data.Items[0].TIME_NUM.N, data.Items[0].EVENT_VOL.N);
         }
     });
 }
 
 var noteIntervals = [];
-function scheduleNotes(eventNum, eventTime, eventVol){
+function scheduleNotes(eventNum, eventTime, eventVol) {
     clearInterval(eventListenerInterval);
-    while(myNotes.length > 0 && myNotes[0].parentEventNum === eventNum){
+    while (myNotes.length > 0 && myNotes[0].parentEventNum === eventNum) {
         let note = myNotes.shift();
         console.log("EVENT TIME: " + (eventTime));
         console.log("RELATIVE TIME : " + (note.relativeTime));
         console.log("now: " + (new Date().getTime()));
 
         console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
-        noteIntervals.push(setInterval(function(){
+        noteIntervals.push(setInterval(function () {
             clearInterval(noteIntervals.shift());
             playNote(note.hs, note.relativeVol * eventVol, note.sampleNum);
         }, Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
-    }    
+    }
     scheduleEventListener();
 }
 
 
-function playNote(hs,vol,sampleNum){
-    
+function playNote(hs, vol, sampleNum) {
+
     console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
     var sound = sounds[sampleNum - 1].pop();
 
     if (audioContext.state === "suspended") {
         audioContext.resume();
-      }
-    
+    }
+
     sound.preservesPitch = false;
-    sound.playbackRate = (c0Freq * (2 ** (hs/20.0))) / refFreqs[sampleNum - 1];
+    sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    //console.log("RATE: " + sound.playbackRate);
     sound.volume = vol * 0.1;
     //sound.currentTime = 0;
     //sound.muted = false;
     if (audioContext.state === "suspended") {
         audioContext.resume();
-      }
+    }
     sound.play();
     /*
     setTimeout(function(){
@@ -287,28 +288,28 @@ function playNote(hs,vol,sampleNum){
     }, 1000);
     */
 
-var audio = new Audio("./" + sampleNum + ".wav");
-    sounds[sampleNum - 1].push(auudio);
+    var audio = new Audio("./" + sampleNum + ".wav");
+    sounds[sampleNum - 1].push(audio);
     var track = audioContext.createMediaElementSource(audio);
-      track.connect(audioContext.destination);
+    track.connect(audioContext.destination);
 
-      
+
 }
 
-function activateSoundEvent(){
+function activateSoundEvent() {
     activeSoundEvents++;
-    if(activeSoundEvents == 1){
+    if (activeSoundEvents == 1) {
         addInstructionsGraphic();
     }
     clearInterval(eventActivationIntervals.shift());
 }
 
-function instantiateSoundEvent(eventVol){
+function instantiateSoundEvent(eventVol) {
     activeSoundEvents--;
 
-    if(!Number.isFinite(eventVol)) eventVol = 1;//for testing
+    if (!Number.isFinite(eventVol)) eventVol = 1;//for testing
 
-    if(activateSoundEvent == 0){
+    if (activateSoundEvent == 0) {
         removeInstructionsGraphic();
     }
 
@@ -329,14 +330,14 @@ function instantiateSoundEvent(eventVol){
         if (err) {
             console.log("error", err);
         }
-        else{
+        else {
             console.log("CURRENT_EVENT_NUM UPDATED. OLD = ", data.Attributes.CURRENT_EVENT_NUM.N);
             writeEventToDB(data.Attributes.CURRENT_EVENT_NUM.N, eventVol);
         }
     });
 }
 
-function writeEventToDB(eventNum, eventVol){
+function writeEventToDB(eventNum, eventVol) {
     var params = {
         Item: {
             EVENT_NUM: {
@@ -358,7 +359,7 @@ function writeEventToDB(eventNum, eventVol){
     });
 }
 
-function addInstructionsGraphic(){
+function addInstructionsGraphic() {
     var button = document.createElement("BUTTON");
     button.id = "instantiateSoundEventButton";
     button.innerText = "Instantiate Sound Event";
@@ -368,7 +369,7 @@ function addInstructionsGraphic(){
 }
 
 
-function removeInstructionsGraphic(){
+function removeInstructionsGraphic() {
     document.body.removeChild(document.body.getElementById("instantiateSoundEventButton"));
 }
 
