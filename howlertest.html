@@ -5,6 +5,7 @@
 </head>
 
 <body>
+  <button onclick="loadSound()">load!2</button>
   <button onclick="playSound()">play!2</button>
 
   <script src="https://twmcdunn.github.io/etude_for_smart_phones/node_modules/howler/dist/howler.js"></script>
@@ -13,8 +14,11 @@
 
 
     var myInstance = null;
+    
+    function loadSound(){
     createjs.Sound.on("fileload", handleLoad);
     createjs.Sound.registerSound("./1.mp3", "myID", 3);
+  }
     function handleLoad(event) {
       myInstance = createjs.Sound.createInstance("myID");
       // alternately we could call the following
@@ -28,7 +32,7 @@
       });
       sound.play();
       */
-
+      myInstance.play();
 
       createjs.Sound.play("myID");
       console.log("played with jssouund");
