@@ -35,7 +35,7 @@ function readComposition(userNum, totUsers, callback) {
     fetch(dir + "composition.txt")
         .then((res) => res.text())
         .then((text) => {
-            console.log(text);
+            //console.log(text);
             const lines = text.split("\n");
             for (let n = 0; n < lines.length; n++) {
                 if(lines[n] === "EVENT"){

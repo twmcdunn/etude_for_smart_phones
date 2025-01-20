@@ -45,6 +45,8 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     document.body.appendChild(button);
 }
 
+var audioContext = new AudioContext();
+
 async function test() {
     console.log("test");
 
@@ -106,6 +108,7 @@ function resetLocalData() {
 
 var checkIfStartedInterval = -1;
 function updateAndGetUserNum() {
+    backgroundSound();
     queueSounds1();
     var params = {
         ExpressionAttributeValues: {
@@ -134,10 +137,19 @@ function updateAndGetUserNum() {
     });
 
 }
+
+function backgroundSound(){
+    var osc = OscillatorNode();
+    osc.connect(audioContext.destination);
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+    osc.start();
+}
+
 var c0Freq = 440 * (2 ** (3 / 12)) * (2 ** -5);
 var refFreqs = [2077];
 var sounds = [];
-var audioContext = new AudioContext();
 function queueSounds() {
     for (let n = 1; n <= 1; n++) {//n is sample num
         var soundArr = [];
