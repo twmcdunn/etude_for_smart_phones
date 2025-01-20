@@ -272,7 +272,12 @@ function playNote(hs, vol, sampleNum) {
     }
 
     sound.preservesPitch = false;
-    sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    //sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    sound.addEventListener('timeupdate', function(){
+        if(!isNaN(sound.currentTime)) {
+            sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+        }
+    });
     //console.log("RATE: " + sound.playbackRate);
     sound.volume = vol * 0.1;
     //sound.currentTime = 0;
