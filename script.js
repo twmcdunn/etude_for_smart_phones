@@ -2,6 +2,13 @@
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
 
 //const {Howl, Howler} = require('howler');
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// Importing the required modules
+const {Howl, Howler} = require('howler');
+
 var local = false;
 
 AWS.config.update({
