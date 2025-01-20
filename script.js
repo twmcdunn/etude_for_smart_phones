@@ -106,7 +106,7 @@ function resetLocalData() {
 
 var checkIfStartedInterval = -1;
 function updateAndGetUserNum() {
-    queueSounds();
+    queueSounds1();
     var params = {
         ExpressionAttributeValues: {
             ":increment": { N: "1" }
@@ -161,6 +161,15 @@ function queueSounds() {
     }
     if (audioContext.state === "suspended") {
         audioContext.resume();
+    }
+}
+
+var buffers = [];
+function queueSounds1(){
+    for (let n = 1; n <= 1; n++) {//n is sampleNum
+        getAudioBuffer(n, (buff) => {
+            buffers.push(buff);
+        });
     }
 }
 
@@ -267,17 +276,16 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
 }
 
 function getAudioBuffer(sampleNum, callback){
-    var url = "./" + sampleNum + ".mp3";
+    var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".mp3";
     var req = new XMLHttpRequest();
-    req.responseText = "arraybuffer";
+    req.responseType = "arraybuffer";
     req.onload = function(){
         audioContext.decodeAudioData(req.response, function(buffer){
-            const source = audioContext.createBufferSource();
-            source.buffer = buffer;
-            source.connect(audioContext.destination);
-            callback(source);
+            callback(buffer);
         })
     };
+    req.open("GET", url);
+    req.send();
 }
 
 
@@ -285,14 +293,18 @@ function playNote(hs, vol, sampleNum) {
 
     console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
-    var sound = sounds[sampleNum - 1].pop();
+    var buff = buffers[sampleNum - 1];
 
     if (audioContext.state === "suspended") {
         audioContext.resume();
     }
 
+    const source = audioContext.createBufferSource();
+    source.buffer = buff;
+    source.connect(audioContext.destination);
+
     //sound.preservesPitch = false;
-    sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    source.playbackRate.value = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
    /*
     sound.addEventListener('timeupdate', function(){
         if(!isNaN(sound.currentTime)) {
@@ -307,7 +319,7 @@ function playNote(hs, vol, sampleNum) {
     if (audioContext.state === "suspended") {
         audioContext.resume();
     }
-    sound.start();
+    source.start();
     /*
     setTimeout(function(){
         sound.muted = true;
@@ -317,9 +329,6 @@ function playNote(hs, vol, sampleNum) {
 
     //var audio = //new Audio("./" + sampleNum + ".wav");
     
-    getAudioBuffer(sampleNum, (audio) => {
-        sounds[sampleNum - 1].push(audio);
-    });
 
     /*
     var track = audioContext.createMediaElementSource(audio);
