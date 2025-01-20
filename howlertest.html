@@ -16,6 +16,7 @@
     var myInstance = null;
     
     function loadSound(){
+      createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.on("fileload", handleLoad);
     createjs.Sound.registerSound("./1.mp3", "myID", 3);
     console.log("register");
