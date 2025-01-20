@@ -3,11 +3,13 @@
 
 //const {Howl, Howler} = require('howler');
 
+/*
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
+const {Howl, Howler} = require('howler');
+*/ 
 
 // Importing the required modules
-const {Howl, Howler} = require('howler');
 
 var local = false;
 
