@@ -144,6 +144,8 @@ function queueSounds() {
             var audio = new Howl({
                 src: ['./' + n + '.mp3']
             });
+            //audio.loop = true;
+            audio.load();
             soundArr.push(audio);
         }
         sounds.push(soundArr);
