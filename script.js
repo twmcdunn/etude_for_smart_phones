@@ -263,6 +263,7 @@ function playNote(hs,vol,sampleNum){
     
     sound.playbackRate = (c0Freq * (2 ** (hs/20.0))) / refFreqs[sampleNum - 1];
     sound.volume = vol * 0.1;
+    sound.currentTime = 0;
     sound.muted = false;
     //sound.play();
     setTimeout(function(){
