@@ -46,7 +46,7 @@ for (let i = 0; i < buttonFuncs.length; i++) {
 }
 
 var audioContext = new AudioContext();
-StartAudioContext(context, "#playButton");
+StartAudioContext(audioContext, "#playButton");
 
 async function test() {
     console.log("test");
