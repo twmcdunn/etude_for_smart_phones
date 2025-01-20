@@ -141,11 +141,12 @@ function queueSounds() {
     for (let n = 1; n <= 1; n++) {//n is sample num
         var soundArr = [];
         for (let i = 0; i < 20; i++) {
-            var audio = new Howl({
-                src: ['./' + n + '.mp3']
-            });
-            //audio.loop = true;
-            audio.load();
+            var audio = new Audio("./" + n + ".mp3");//new Howl({ src: ['./' + n + '.mp3'] });
+            audio.loop = true;
+            audio.muted = true;
+            audio.preservesPitch = false;
+            audio.play();
+            //audio.load();
             soundArr.push(audio);
         }
         sounds.push(soundArr);
@@ -259,11 +260,18 @@ function playNote(hs,vol,sampleNum){
     console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
     var sound = sounds[sampleNum - 1].pop();
-    sound.preservesPitch = false;
+    
     sound.playbackRate = (c0Freq * (2 ** (hs/20.0))) / refFreqs[sampleNum - 1];
     sound.volume = vol * 0.1;
-    sound.play();
-    sounds[sampleNum - 1].push(new Audio("./" + sampleNum + ".wav"));
+    sound.muted = false;
+    //sound.play();
+    setTimeout({
+        sound.muted = true;
+        sounds[sampleNum - 1].push(sound);
+    }, 1000);
+
+
+    //sounds[sampleNum - 1].push(new Audio("./" + sampleNum + ".wav"));
 }
 
 function activateSoundEvent(){
