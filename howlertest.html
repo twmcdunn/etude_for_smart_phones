@@ -5,8 +5,8 @@
 </head>
 
 <body>
-  <button onclick="loadSound()">load!4</button>
-  <button onclick="playSound()">play!4</button>
+  <button onclick="loadSound()">load!5</button>
+  <button onclick="playSound()">play!5</button>
 
   <script src="https://twmcdunn.github.io/etude_for_smart_phones/node_modules/howler/dist/howler.js"></script>
   <script src="node_modules/soundjs/lib/soundjs.js"></script>
@@ -15,12 +15,12 @@
 
     
 var audio = null;
-const audioContext = new AudioContext();
+var audioContext = new AudioContext();
 
     function loadSound(){
       audio = new Audio("./1.mp3");
 
-      const track = audioContext.createMediaElementSource(audio);
+      var track = audioContext.createMediaElementSource(audio);
       track.connect(audioContext.destination);
 
       if (audioContext.state === "suspended") {
