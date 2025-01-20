@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+  <button onclick="playSound()">play!</button>
+  <script src="node_modules/howler/dist/howler.js"></script>
+  <script>
+
+    function playSound() {
+      var sound = new Howl({
+        src: ['./1.mp3']
+      });
+      sound.play();
+    }
+  </script>
+</body>
+
+</html>
