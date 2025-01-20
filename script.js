@@ -265,7 +265,7 @@ function playNote(hs,vol,sampleNum){
     sound.volume = vol * 0.1;
     sound.muted = false;
     //sound.play();
-    setTimeout({
+    setTimeout(function(){
         sound.muted = true;
         sounds[sampleNum - 1].push(sound);
     }, 1000);
