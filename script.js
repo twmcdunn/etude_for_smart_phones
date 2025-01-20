@@ -142,7 +142,7 @@ function updateAndGetUserNum() {
 function backgroundSound(){
     var osc = new OscillatorNode(audioContext);
     osc.connect(audioContext.destination);
-    if (audioContext.state === "suspended") {
+    if (audioContext.state != "running") {
         audioContext.resume();
     }
     osc.start();
@@ -172,7 +172,7 @@ function queueSounds() {
         }
         sounds.push(soundArr);
     }
-    if (audioContext.state === "suspended") {
+    if (audioContext.state != "running") {
         audioContext.resume();
     }
 }
@@ -308,7 +308,7 @@ function playNote(hs, vol, sampleNum) {
     //c0Freq * Math.pow(2, note.hs/20.0)
     var buff = buffers[sampleNum - 1];
 
-    if (audioContext.state === "suspended") {
+    if (audioContext.state != "running") {
         audioContext.resume();
     }
 
@@ -329,7 +329,7 @@ function playNote(hs, vol, sampleNum) {
     //sound.volume = vol * 0.1;
     //sound.currentTime = 0;
     //sound.muted = false;
-    if (audioContext.state === "suspended") {
+    if (audioContext.state != "running") {
         audioContext.resume();
     }
     source.start();
