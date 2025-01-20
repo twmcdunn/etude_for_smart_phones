@@ -46,6 +46,7 @@ for (let i = 0; i < buttonFuncs.length; i++) {
 }
 
 var audioContext = new AudioContext();
+StartAudioContext(context, "#playButton");
 
 async function test() {
     console.log("test");
@@ -108,7 +109,7 @@ function resetLocalData() {
 
 var checkIfStartedInterval = -1;
 function updateAndGetUserNum() {
-    backgroundSound();
+    //backgroundSound();
     queueSounds1();
     var params = {
         ExpressionAttributeValues: {
