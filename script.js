@@ -142,6 +142,7 @@ function queueSounds() {
     for (let n = 1; n <= 1; n++) {//n is sample num
         var soundArr = [];
         for (let i = 0; i < 20; i++) {
+            /*
             var audio = new Audio("./" + n + ".mp3");//new Howl({ src: ['./' + n + '.mp3'] });
             //audio.loop = true;
             //audio.muted = true;
@@ -150,6 +151,11 @@ function queueSounds() {
             var track = audioContext.createMediaElementSource(audio);
             track.connect(audioContext.destination);
             soundArr.push(audio);
+            */
+            
+            getAudioBuffer(sampleNum, (audio) => {
+                soundArr.push(audio);
+            });
         }
         sounds.push(soundArr);
     }
@@ -260,6 +266,20 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
     scheduleEventListener();
 }
 
+function getAudioBuffer(sampleNum, callback){
+    var url = "./" + sampleNum + ".mp3";
+    var req = new XMLHttpRequest();
+    req.responseText = "arraybuffer";
+    req.onload = function(){
+        audioContext.decodeAudioData(req.response, function(buffer){
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            callback(source);
+        })
+    };
+}
+
 
 function playNote(hs, vol, sampleNum) {
 
@@ -271,21 +291,23 @@ function playNote(hs, vol, sampleNum) {
         audioContext.resume();
     }
 
-    sound.preservesPitch = false;
-    //sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    //sound.preservesPitch = false;
+    sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+   /*
     sound.addEventListener('timeupdate', function(){
         if(!isNaN(sound.currentTime)) {
             sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
         }
     });
+    */
     //console.log("RATE: " + sound.playbackRate);
-    sound.volume = vol * 0.1;
+    //sound.volume = vol * 0.1;
     //sound.currentTime = 0;
     //sound.muted = false;
     if (audioContext.state === "suspended") {
         audioContext.resume();
     }
-    sound.play();
+    sound.start();
     /*
     setTimeout(function(){
         sound.muted = true;
@@ -293,10 +315,16 @@ function playNote(hs, vol, sampleNum) {
     }, 1000);
     */
 
-    var audio = new Audio("./" + sampleNum + ".wav");
-    sounds[sampleNum - 1].push(audio);
+    //var audio = //new Audio("./" + sampleNum + ".wav");
+    
+    getAudioBuffer(sampleNum, (audio) => {
+        sounds[sampleNum - 1].push(audio);
+    });
+
+    /*
     var track = audioContext.createMediaElementSource(audio);
     track.connect(audioContext.destination);
+    */
 
 
 }
