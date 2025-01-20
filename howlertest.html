@@ -5,15 +5,33 @@
 </head>
 
 <body>
-  <button onclick="playSound()">play!1</button>
+  <button onclick="playSound()">play!2</button>
+
   <script src="https://twmcdunn.github.io/etude_for_smart_phones/node_modules/howler/dist/howler.js"></script>
+  <script src="node_modules/soundjs/lib/soundjs.js"></script>
   <script>
 
+
+    var myInstance = null;
+    createjs.Sound.on("fileload", handleLoad);
+    createjs.Sound.registerSound("./1.mp3", "myID", 3);
+    function handleLoad(event) {
+      myInstance = createjs.Sound.createInstance("myID");
+      // alternately we could call the following
+    }
+
+
     function playSound() {
+      /*
       var sound = new Howl({
         src: ['./1.mp3']
       });
       sound.play();
+      */
+
+
+      createjs.Sound.play("myID");
+      console.log("played with jssouund");
     }
   </script>
 </body>
