@@ -18,7 +18,7 @@
     function loadSound(){
       createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.on("fileload", handleLoad);
-    createjs.Sound.registerSound("./1.mp3", "myID", 1);
+    createjs.Sound.registerSound("./1.mp3", "myID");
     console.log("register");
   }
     function handleLoad(event) {
