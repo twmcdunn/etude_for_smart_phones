@@ -153,7 +153,7 @@ function queueSounds() {
             soundArr.push(audio);
             */
             
-            getAudioBuffer(sampleNum, (audio) => {
+            getAudioBuffer(n, (audio) => {
                 soundArr.push(audio);
             });
         }
