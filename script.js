@@ -137,20 +137,25 @@ function updateAndGetUserNum(){
 var c0Freq = 440 * (2**(3/12)) * (2 ** -5);
 var refFreqs = [2077];
 var sounds = [];
+var audioContext = new AudioContext();
 function queueSounds() {
     for (let n = 1; n <= 1; n++) {//n is sample num
         var soundArr = [];
         for (let i = 0; i < 20; i++) {
             var audio = new Audio("./" + n + ".mp3");//new Howl({ src: ['./' + n + '.mp3'] });
-            audio.loop = true;
-            audio.muted = true;
-            audio.preservesPitch = false;
-            audio.play();
+            //audio.loop = true;
+            //audio.muted = true;
+            //audio.play();
             //audio.load();
+            var track = audioContext.createMediaElementSource(audio);
+      track.connect(audioContext.destination);
             soundArr.push(audio);
         }
         sounds.push(soundArr);
     }
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
 }
 
 
@@ -257,22 +262,37 @@ function scheduleNotes(eventNum, eventTime, eventVol){
 
 
 function playNote(hs,vol,sampleNum){
+    
     console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
     var sound = sounds[sampleNum - 1].pop();
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
     
+    sound.preservesPitch = false;
     sound.playbackRate = (c0Freq * (2 ** (hs/20.0))) / refFreqs[sampleNum - 1];
     sound.volume = vol * 0.1;
-    sound.currentTime = 0;
-    sound.muted = false;
-    //sound.play();
+    //sound.currentTime = 0;
+    //sound.muted = false;
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+    sound.play();
+    /*
     setTimeout(function(){
         sound.muted = true;
         sounds[sampleNum - 1].push(sound);
     }, 1000);
+    */
 
+var audio = new Audio("./" + sampleNum + ".wav");
+    sounds[sampleNum - 1].push(auudio);
+    var track = audioContext.createMediaElementSource(audio);
+      track.connect(audioContext.destination);
 
-    //sounds[sampleNum - 1].push(new Audio("./" + sampleNum + ".wav"));
+      
 }
 
 function activateSoundEvent(){
