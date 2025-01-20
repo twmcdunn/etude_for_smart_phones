@@ -139,7 +139,7 @@ function updateAndGetUserNum() {
 }
 
 function backgroundSound(){
-    var osc = OscillatorNode();
+    var osc = new OscillatorNode(audioContext);
     osc.connect(audioContext.destination);
     if (audioContext.state === "suspended") {
         audioContext.resume();
