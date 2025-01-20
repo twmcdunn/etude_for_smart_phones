@@ -14,9 +14,10 @@
 
 
     
-const audio = null;
+var audio = null;
+const audioContext = new AudioContext();
+
     function loadSound(){
-      const audioContext = new AudioContext();
       audio = new Audio("./1.mp3");
 
       const track = audioContext.createMediaElementSource(audio);
