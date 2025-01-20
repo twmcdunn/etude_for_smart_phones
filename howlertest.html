@@ -13,35 +13,28 @@
   <script>
 
 
-    var myInstance = null;
     
+const audio = null;
     function loadSound(){
-      createjs.Sound.registerPlugins([createjs.FlashAudioPlugin]);
+      const audioContext = new AudioContext();
+      audio = new Audio("./1.mp3");
 
-      createjs.Sound.alternateExtensions = ["mp3"];
-    createjs.Sound.on("fileload", handleLoad);
-    createjs.Sound.registerSound("./1.mp3", "myID");
-    console.log("register");
-  }
-    function handleLoad(event) {
-      myInstance = createjs.Sound.createInstance("myID");
-      console.log("LOADED");
-      // alternately we could call the following
+      const track = audioContext.createMediaElementSource(audio);
+      track.connect(audioContext.destination);
+
+      if (audioContext.state === "suspended") {
+      audioContext.resume();
     }
+
+  }
 
 
     function playSound() {
-      console.log("PLAY");
-      /*
-      var sound = new Howl({
-        src: ['./1.mp3']
-      });
-      sound.play();
-      */
-      myInstance.play();
-
-      createjs.Sound.play("myID");
-      console.log("played with jssouund");
+      if (audioContext.state === "suspended") {
+      audioContext.resume();
+      audio.play();
+    }
+     
     }
   </script>
 </body>
