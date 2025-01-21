@@ -32,11 +32,17 @@ var audioContext = new AudioContext();
 
 
     function playSound() {
+      console.log("TIME1: "+ new Date().getTime());
       if (audioContext.state === "suspended") {
       audioContext.resume();
+      console.log("resumed");
+
       
     }
+    console.log("TIME2: "+ new Date().getTime());
     audio.play();
+    console.log("TIME3: "+ new Date().getTime());
+
      
     }
   </script>
