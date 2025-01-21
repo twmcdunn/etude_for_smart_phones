@@ -1,4 +1,4 @@
-var local = false;
+var local = true;
 
 AWS.config.update({
     region: "us-east-2",

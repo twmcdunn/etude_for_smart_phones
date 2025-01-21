@@ -11,7 +11,7 @@ const {Howl, Howler} = require('howler');
 
 // Importing the required modules
 
-var local = false;
+var local = true;
 
 AWS.config.update({
     region: "us-east-2",
@@ -286,11 +286,11 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
     clearInterval(eventListenerInterval);
     while (myNotes.length > 0 && myNotes[0].parentEventNum === eventNum) {
         let note = myNotes.shift();
-        console.log("EVENT TIME: " + (eventTime));
-        console.log("RELATIVE TIME : " + (note.relativeTime));
-        console.log("now: " + (new Date().getTime()));
+        //console.log("EVENT TIME: " + (eventTime));
+        //console.log("RELATIVE TIME : " + (note.relativeTime));
+        //console.log("now: " + (new Date().getTime()));
 
-        console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
+        //console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
         
 
         var buff = buffers[note.sampleNum - 1];
@@ -340,7 +340,7 @@ function getAudioBuffer(sampleNum, callback){
 
 function playNote(hs, vol, sampleNum) {
 
-    console.log("PLAY NOTE ", hs, vol, sampleNum);
+    //console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
     var buff = buffers[sampleNum - 1];
 
@@ -398,10 +398,11 @@ function activateSoundEvent() {
 
 function instantiateSoundEvent(eventVol) {
     activeSoundEvents--;
+    console.log("EVENT INSTANTIATED @ ACTIVE = " + activeSoundEvents);
 
     if (!Number.isFinite(eventVol)) eventVol = 1;//for testing
 
-    if (activateSoundEvent == 0) {
+    if (activeSoundEvents == 0) {
         removeInstructionsGraphic();
     }
 
@@ -453,6 +454,7 @@ function writeEventToDB(eventNum, eventVol) {
 
 var instantiateSoundEventButton = null;
 function addInstructionsGraphic() {
+    console.log("ADDING GRAPHIC @ active sound events =" + activeSoundEvents);
     instantiateSoundEventButton = document.createElement("BUTTON");
     instantiateSoundEventButton.id = "instantiateSoundEventButton";
     instantiateSoundEventButton.innerText = "Instantiate Sound Event";
@@ -463,6 +465,7 @@ function addInstructionsGraphic() {
 
 
 function removeInstructionsGraphic() {
+    console.log("REMOVING GRAPHIC @ active sound events =" + activeSoundEvents);
     document.body.removeChild(instantiateSoundEventButton);
 }
 
