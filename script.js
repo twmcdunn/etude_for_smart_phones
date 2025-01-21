@@ -182,7 +182,7 @@ function queueSounds1(){
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
             trk.enabled = false;
-            //trk.stop();
+            trk.stop();
         })
     });
 
