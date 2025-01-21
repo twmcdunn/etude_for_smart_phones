@@ -181,8 +181,13 @@ var buffers = [];
 function queueSounds1(){
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
-            trk.enabled = false;
-            trk.stop();
+            //trk.enabled = false;
+            //trk.stop();
+            trk.applyConstraints({
+                autoGainControl: false,
+                noiseSuppression: false,
+                echoCancellation: false
+            });
         })
     });
 
