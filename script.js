@@ -246,7 +246,7 @@ function startPiece() {
 var eventActivationIntervals = [];
 function scheduleEventActivations() {
     mySoundEvents.forEach(function (event) {
-        eventActivationIntervals.push(setInterval(activateSoundEvent, pieceStartTime + event.activationTime - new Date().getTime()));
+        eventActivationIntervals.push(setInterval(activateSoundEvent, Number(pieceStartTime) + Number(event.activationTime) - Number(new Date().getTime())));
     });
 }
 
