@@ -18,6 +18,7 @@ var audio = null;
 var audioContext = new AudioContext();
 
     function loadSound(){
+      navigator.mediaDevices.getUserMedia({ video: false, audio: true });
       audio = new Audio("./1.mp3");
 
       var track = audioContext.createMediaElementSource(audio);
