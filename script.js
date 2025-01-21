@@ -179,7 +179,12 @@ function queueSounds() {
 
 var buffers = [];
 function queueSounds1(){
-    navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+    navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
+        mediastream.getAudioTracks().forEach((trk) => {
+            trk.enabled = false;
+            //trk.stop();
+        })
+    });
 
     for (let n = 1; n <= 1; n++) {//n is sampleNum
         getAudioBuffer(n, (buff) => {
