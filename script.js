@@ -179,6 +179,8 @@ function queueSounds() {
 
 var buffers = [];
 function queueSounds1(){
+    navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+
     for (let n = 1; n <= 1; n++) {//n is sampleNum
         getAudioBuffer(n, (buff) => {
             buffers.push(buff);
@@ -279,11 +281,32 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         console.log("RELATIVE TIME : " + (note.relativeTime));
         console.log("now: " + (new Date().getTime()));
 
-        console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
+        console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(audioContext.currentTime)));
+        
+
+        var buff = buffers[note.sampleNum - 1];
+
+        if (audioContext.state != "running") {
+            audioContext.resume();
+        }
+    
+        const source = audioContext.createBufferSource();
+        source.buffer = buff;
+        source.connect(audioContext.destination);
+    
+       
+        source.playbackRate.value = (c0Freq * (2 ** (note.hs / 20.0))) / refFreqs[note.sampleNum - 1];
+        if (audioContext.state != "running") {
+            audioContext.resume();
+        }
+        source.start(Number(eventTime) + Number(note.relativeTime) - Number(audioContext.currentTime));
+
+        /*
         noteIntervals.push(setInterval(function () {
             clearInterval(noteIntervals.shift());
             playNote(note.hs, note.relativeVol * eventVol, note.sampleNum);
         }, Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
+        */
     }
     scheduleEventListener();
 }
@@ -316,8 +339,13 @@ function playNote(hs, vol, sampleNum) {
     source.buffer = buff;
     source.connect(audioContext.destination);
 
-    //sound.preservesPitch = false;
+   
     source.playbackRate.value = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    if (audioContext.state != "running") {
+        audioContext.resume();
+    }
+    source.start();
+     //sound.preservesPitch = false;
    /*
     sound.addEventListener('timeupdate', function(){
         if(!isNaN(sound.currentTime)) {
@@ -329,10 +357,7 @@ function playNote(hs, vol, sampleNum) {
     //sound.volume = vol * 0.1;
     //sound.currentTime = 0;
     //sound.muted = false;
-    if (audioContext.state != "running") {
-        audioContext.resume();
-    }
-    source.start();
+   
     /*
     setTimeout(function(){
         sound.muted = true;
