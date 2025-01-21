@@ -243,10 +243,9 @@ function startPiece() {
 }
 
 //allows this user to instantiate an event
-var eventActivationIntervals = [];
 function scheduleEventActivations() {
     mySoundEvents.forEach(function (event) {
-        eventActivationIntervals.push(setInterval(activateSoundEvent, Number(pieceStartTime) + Number(event.activationTime) - Number(new Date().getTime())));
+        setTimeout(activateSoundEvent, Number(pieceStartTime) + Number(event.activationTime) - Number(new Date().getTime()));
     });
 }
 
@@ -274,7 +273,7 @@ function listenForEvent() {
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
-        } else if (data.Count > 0) {
+        } else if (Number(data.Count) > 0) {
             //since this method pops all notes that are children of the event
             //there will be no duplicate invocations
             scheduleNotes(eventNum, data.Items[0].TIME_NUM.N, data.Items[0].EVENT_VOL.N);
@@ -303,7 +302,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         const source = audioContext.createBufferSource();
         source.buffer = buff;
         const gainNode = audioContext.createGain();
-        gainNode.gain.value = Number(eventVol) * Number(note.relativeVol) * 0.1;
+        gainNode.gain.value = Number(eventVol) * Number(note.relativeVol) * (0.5 ** (Number(audioContext.destination.numberOfInputs) + 1));
         source.connect(gainNode);
         gainNode.connect(audioContext.destination);
     
@@ -313,7 +312,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
             audioContext.resume();
         }
         source.start(Math.max(audioContext.currentTime + 
-            (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0,0));
+            ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0),0));
 
         /*
         noteIntervals.push(setInterval(function () {
@@ -395,7 +394,6 @@ function activateSoundEvent() {
     if (activeSoundEvents == 1) {
         addInstructionsGraphic();
     }
-    clearInterval(eventActivationIntervals.shift());
 }
 
 function instantiateSoundEvent(eventVol) {
