@@ -5,8 +5,8 @@
 </head>
 
 <body>
-  <button onclick="loadSound()">load!6</button>
-  <button onclick="playSound()">play!6</button>
+  <button onclick="loadSound()">load!7</button>
+  <button onclick="playViaNode()">play!7</button>
 
   <script src="https://twmcdunn.github.io/etude_for_smart_phones/node_modules/howler/dist/howler.js"></script>
   <script src="node_modules/soundjs/lib/soundjs.js"></script>
@@ -45,6 +45,48 @@ var audioContext = new AudioContext();
 
      
     }
+
+    function playViaNode(){
+      getAudioBuffer(1,(buff)=> {
+
+    const source = audioContext.createBufferSource();
+    source.buffer = buff;
+    source.connect(audioContext.destination);
+
+    //sound.preservesPitch = false;
+    source.playbackRate.value = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+   /*
+    sound.addEventListener('timeupdate', function(){
+        if(!isNaN(sound.currentTime)) {
+            sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+        }
+    });
+    */
+    //console.log("RATE: " + sound.playbackRate);
+    //sound.volume = vol * 0.1;
+    //sound.currentTime = 0;
+    //sound.muted = false;
+    if (audioContext.state != "running") {
+        audioContext.resume();
+    }
+    console.log("STARTING");
+    source.start();
+    console.log("STARTED");
+      });
+    }
+
+    function getAudioBuffer(sampleNum, callback){
+    var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".mp3";
+    var req = new XMLHttpRequest();
+    req.responseType = "arraybuffer";
+    req.onload = function(){
+        audioContext.decodeAudioData(req.response, function(buffer){
+            callback(buffer);
+        })
+    };
+    req.open("GET", url);
+    req.send();
+}
   </script>
 </body>
 
