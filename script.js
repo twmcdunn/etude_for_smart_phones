@@ -302,7 +302,10 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
     
         const source = audioContext.createBufferSource();
         source.buffer = buff;
-        source.connect(audioContext.destination);
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = Number(eventVol) * Number(note.relativeVol) * 0.1;
+        source.connect(gainNode);
+        gainNode.connect(audioContext.destination);
     
        
         source.playbackRate.value = (c0Freq * (2 ** (note.hs / 20.0))) / refFreqs[note.sampleNum - 1];
