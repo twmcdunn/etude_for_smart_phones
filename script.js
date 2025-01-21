@@ -281,7 +281,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         console.log("RELATIVE TIME : " + (note.relativeTime));
         console.log("now: " + (new Date().getTime()));
 
-        console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(audioContext.currentTime)));
+        console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
         
 
         var buff = buffers[note.sampleNum - 1];
@@ -299,7 +299,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         if (audioContext.state != "running") {
             audioContext.resume();
         }
-        source.start(Number(eventTime) + Number(note.relativeTime) - Number(audioContext.currentTime));
+        source.start(Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime()));
 
         /*
         noteIntervals.push(setInterval(function () {
