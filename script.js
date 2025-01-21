@@ -451,18 +451,19 @@ function writeEventToDB(eventNum, eventVol) {
     });
 }
 
+var instantiateSoundEventButton = null;
 function addInstructionsGraphic() {
-    var button = document.createElement("BUTTON");
-    button.id = "instantiateSoundEventButton";
-    button.innerText = "Instantiate Sound Event";
-    button.onclick = instantiateSoundEvent;
-    document.body.appendChild(button);
+    instantiateSoundEventButton = document.createElement("BUTTON");
+    instantiateSoundEventButton.id = "instantiateSoundEventButton";
+    instantiateSoundEventButton.innerText = "Instantiate Sound Event";
+    instantiateSoundEventButton.onclick = instantiateSoundEvent;
+    document.body.appendChild(instantiateSoundEventButton);
 
 }
 
 
 function removeInstructionsGraphic() {
-    document.body.removeChild(document.body.getElementById("instantiateSoundEventButton"));
+    document.body.removeChild(instantiateSoundEventButton);
 }
 
 
