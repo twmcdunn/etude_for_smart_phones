@@ -389,18 +389,21 @@ function playNote(hs, vol, sampleNum) {
 
 }
 
+var timeOutsForEventInstantiation = [];
 function activateSoundEvent() {
     activeSoundEvents++;
     if (activeSoundEvents == 1) {
         addInstructionsGraphic();
     }
+    timeOutsForEventInstantiation.push(timeOut(instantiateSoundEvent, 20000));
 }
 
 function instantiateSoundEvent(eventVol) {
+    clearTimeout(timeOutsForEventInstantiation.shift());
     activeSoundEvents--;
     console.log("EVENT INSTANTIATED @ ACTIVE = " + activeSoundEvents);
 
-    if (!Number.isFinite(eventVol)) eventVol = 1;//for testing
+    if (!Number.isFinite(eventVol)) eventVol = Math.random();//for timeouts (and testing)
 
     if (activeSoundEvents == 0) {
         removeInstructionsGraphic();
