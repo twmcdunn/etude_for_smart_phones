@@ -54,7 +54,7 @@ var audioContext = new AudioContext();
     source.connect(audioContext.destination);
 
     //sound.preservesPitch = false;
-    source.playbackRate.value = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    source.playbackRate.value = 0.5;
    /*
     sound.addEventListener('timeupdate', function(){
         if(!isNaN(sound.currentTime)) {
