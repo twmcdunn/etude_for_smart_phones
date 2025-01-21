@@ -299,7 +299,8 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         if (audioContext.state != "running") {
             audioContext.resume();
         }
-        source.start(Math.max(Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime()),0));
+        source.start(Math.max(audioContext.currentTime + 
+            (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0,0));
 
         /*
         noteIntervals.push(setInterval(function () {
