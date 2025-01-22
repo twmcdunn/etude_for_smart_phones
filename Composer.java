@@ -182,7 +182,7 @@ public class Composer {
 
                 soundEvent.add(note);
                 if (attackDur > 0
-                && Math.random() < attackDur / 6.0) {//thins it out so that density is the same as in decay
+                && Math.random() < 3 * attackDur / 6.0) {//thins it out so that density is the same as in decay
                     Note note1 = new Note(melody[user % melody.length] + 20 * dbleOct, // chord[(int)(Math.random() *
                                                                                        // chord.length)] + 20 * oct,
                             (int) Math.rint(1000 * (attackDur - attackDur * relTime / 6.0)), relVol, 1,
