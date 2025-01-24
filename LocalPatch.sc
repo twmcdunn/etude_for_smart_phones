@@ -22,6 +22,9 @@ s.waitForBoot({
 	}).add;
 
 });
+
+"IN THE WEB BROWSER, MAKE SURE THE IP AND PORT ARE CORRECT".postln;
+("IP AND PORT: " + NetAddr.localAddr).postln;
 )
 
 a = Synth.new(\filteredNoise);
