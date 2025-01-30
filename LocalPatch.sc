@@ -52,7 +52,11 @@ g.set(\maxNoise, 0.1);
 g.set(\maxAmp, 1);
 
 h = Synth.new(\filteredNoise,[\freq,440 * 5 * 3 * 3 / 32.0]);
-h.set(\maxNoise, 0.1);≤≥≥
+h.set(\maxNoise, 0.1);
+
+
+
+s.sendMsg("/s_new","filteredNoise", 2);
 
 
 
