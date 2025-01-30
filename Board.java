@@ -4,6 +4,11 @@ public class Board extends ArrayList<Triad>{
     
     public Sequencer s;
 
+    //assigned the amount *down* to transpose the set to match the mode
+    //which is the amount *up* to transpose the mode to match the set
+    //assigned when fitsmode() returns true
+    public int modeTrans;
+
     Board(Sequencer seq){ s = seq;}
 
     Board(Board b){
@@ -42,6 +47,7 @@ public class Board extends ArrayList<Triad>{
                     }
                 }
                 if(isC){
+                    modeTrans = propRoot;
                     return true;
                 }
             }

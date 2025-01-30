@@ -7,10 +7,11 @@ var mySoundEvents = [];
 var myNotes = [];
 
 class SoundEvent {
-    constructor(eventNum, activationTime, userNum) {
+    constructor(eventNum, activationTime, userNum, modeTrans) {
         this.eventNum = Number(eventNum);
         this.activationTime = Number(activationTime);
         this.userNum = Number(userNum);
+        this.modeTrans = modeTrans;
         this.notes = [];
     }
 
@@ -39,8 +40,8 @@ function readComposition(userNum, totUsers, callback) {
             const lines = text.split("\n");
             for (let n = 0; n < lines.length; n++) {
                 if(lines[n] === "EVENT"){
-                    var event = new SoundEvent(lines[n+1],lines[n+2],lines[n+3]);
-                    n += 4;
+                    var event = new SoundEvent(lines[n+1],lines[n+2],lines[n+3],lines[n+4]);
+                    n += 5;
                     while(n < lines.length && lines[n] === "NOTE"){
                         var note = new Note(lines[n+1],lines[n+2],lines[n+3],lines[n+4],lines[n+5], event);
                         event.add(note);

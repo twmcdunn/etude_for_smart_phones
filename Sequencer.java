@@ -25,6 +25,11 @@ public class Sequencer {
     public int[][] alternateChords;
     public double[] probDistOfAltChords;
     public static ArrayList<ChordRecord> chordRecords;
+    public int modeTrans;//amount upward to transpose mode to match last chords
+    //this is updated when getChords() is called
+    //no logic is currently implemented to identify *WHICH* mode is used, in cases
+    //where multiple modes are allowed (not using this feature for 20-TET EFSP project)
+    //to implement this, start with Board.fitsMode()
 
     Sequencer(int type) {
         switch (type) {
@@ -67,11 +72,11 @@ public class Sequencer {
                         { 0, 4, 7, 12, 15 }, { 0, 5, 9, 12, 17 }, { 0, 3, 7, 12, 15 }, { 0, 5, 8, 12, 15 },
                         { 0, 3, 7, 12, 17 }, { 0, 5, 8, 12, 17 }
                 };
-                // 0, 7, 12
-                // 0, 5, 12
-                // {1, [5], 8, 13, [16]} {6, 11, 15,18, 3}
-                // {3, 6, 10, 15, 18} {3, 8, 11, 15,18}
-                //// {3, 6, 10, 15, 0} {3, 8, 11, 15,0}
+            // 0, 7, 12
+            // 0, 5, 12
+            // {1, [5], 8, 13, [16]} {6, 11, 15,18, 3}
+            // {3, 6, 10, 15, 18} {3, 8, 11, 15,18}
+            //// {3, 6, 10, 15, 0} {3, 8, 11, 15,0}
                 modes = new int[][] { { 0, 1, 3, 5, 6, 8, 10, 11, 13, 15, 16, 18 } };
                 sourceSyntagm = new Board(this);
                 initializeHardCodedSource(new int[][] { { 0, 1 }, { 1, 6 } });
@@ -196,9 +201,8 @@ public class Sequencer {
                 !currentGame.getLastBoard().contains(transformed) &&
                         ((notTelos(transformed) && currentGame.size() < GAME_LENGTH - 1) ||
                                 (telos == null || !notTelos(transformed) && currentGame.size() == GAME_LENGTH - 1))
-                                
-                                
-                                ) {
+
+                ) {
                     for (Board b : incompleteBoards) {
                         if (b.contains(transformed))
                             continue;
@@ -321,6 +325,8 @@ public class Sequencer {
             for (int n = 0; n < notes.size(); n++)
                 chords[i][n] = notes.get(n);
         }
+
+        modeTrans = lastBoard.modeTrans;
         return chords;
     }
 

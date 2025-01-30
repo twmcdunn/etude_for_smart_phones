@@ -106,7 +106,7 @@ public class Composer {
         double dur = 0.05;
         double relVol = 1;
         double relTime = 0;
-        SoundEvent soundEvent = new SoundEvent(event, (int) Math.rint(time * 1000), eventUser);
+        SoundEvent soundEvent = new SoundEvent(event, (int) Math.rint(time * 1000), eventUser, seq.modeTrans);
         eventUser++;
         // user++;
 
