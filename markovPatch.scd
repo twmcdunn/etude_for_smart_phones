@@ -220,7 +220,7 @@ s.waitForBoot({
 		//rate of each voice
 		~stratumRate = [0,0,0,0,0,0];
 		~stratumRatePow2 = [0,0,0,0,0,0];
-		~stratumRateCurrPow2 = [4,4,4,4,4,4];
+		~stratumRateCurrPow2 = Array.fill(6,{6});
 
 		//an array that will hold the music streams
 		~streams = [nil,nil,nil,nil,nil,nil];
@@ -302,12 +302,12 @@ s.waitForBoot({
 						//val.postln;
 					});
 					val = val * 2.pow(~stratumRateCurrPow2[v]);
-					if(~stratumCurrRatePow2[v] != ~stratumRatePow2[v], {
-						if(~stratumCurrRatePow2[v] > ~stratumRatePow2[v], {
-							~stratumCurrRatePow2[v] -= 1;
+					if(~stratumRateCurrPow2[v] != ~stratumRatePow2[v], {
+						if(~stratumRateCurrPow2[v] > ~stratumRatePow2[v], {
+							~stratumRateCurrPow2[v] = ~stratumRateCurrPow2[v] - 0.25;
 						},
 						{
-							~stratumCurrRatePow2[v] += 1;
+							~stratumRateCurrPow2[v] = ~stratumRateCurrPow2[v] + 0.25;
 						});
 					});
 					val;
@@ -346,7 +346,7 @@ s.waitForBoot({
 		~streams[3].resume(quant:1);
 		~streams[4].resume(quant:1);
 		~streams[5].resume(quant:1);
-		6.do({arg i; ~amp[i] = 0.5; ~curAmp[i] = 0.0});
+		//6.do({arg i; ~amp[i] = 0.5; ~curAmp[i] = 0.0});
 		TempoClock.tempo = 2.0;
 	}
 });
