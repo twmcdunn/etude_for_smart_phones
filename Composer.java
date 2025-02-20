@@ -11,27 +11,30 @@ public class Composer {
     public static double c0Freq = 440 * Math.pow(2, 3 / 12.0) * Math.pow(2, -5);
     public static int user = 0, event = 0, eventUser = 0;
     public static Sequencer seq = new Sequencer(3);
+    public static ArrayList<SampleFreq> sampleFreqs;
 
     public static void main(String[] args) {
         new Composer();
+        // createTimbres();
     }
 
     public Composer() {
+        loadSampleFreqs();
 
         double time = 3;
         int[][] chords1 = seq.getChords();
-        basicChord(chords1[0], time, 6, new double[] { 0 }, 0,0);
-        basicChord(chords1[1], time + 3, 6, new double[] { 0 }, 0,0);
+        basicChord(chords1[0], time, 6, 1, 0, 0);
+        basicChord(chords1[1], time + 3, 6, 1, 0, 0);
 
         time += 30; // 30 seconds to breath
         // 18 sec of chords
         double ad = 2;
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
-            
-            basicChord(chords[0], time, 6, new double[] { 0 }, 0, ad);
+
+            basicChord(chords[0], time, 6, 1, 0, ad);
             ad = 0;
-            basicChord(chords[1], time + 3, 6, new double[] { 0 }, 0, ad);
+            basicChord(chords[1], time + 3, 6, 1, 0, ad);
             time += 3;
         }
 
@@ -40,9 +43,9 @@ public class Composer {
         // 18 sec of chords in 2 octaves (unison)
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
-            basicChord(chords[0], time, 6, new double[] { 0, -1 }, i / 3,0);
+            basicChord(chords[0], time, 6, 2, i / 3, 0);
 
-            basicChord(chords[1], time + 3, 6, new double[] { 0, -1 }, i / 3,1);
+            basicChord(chords[1], time + 3, 6, 2, i / 3, 1);
             time += 3;
         }
 
@@ -52,9 +55,9 @@ public class Composer {
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
 
-            basicChord(chords[0], time, 6, new double[] { 0, -1, 1 }, 1 + i / 3,0);
+            basicChord(chords[0], time, 6, 3, 1 + i / 3, 0);
 
-            basicChord(chords[1], time + 3, 6, new double[] { 0, -1, 1 }, 1 + i / 3,0);
+            basicChord(chords[1], time + 3, 6, 3, 1 + i / 3, 0);
 
             time += 3;
         }
@@ -66,8 +69,8 @@ public class Composer {
             for (int n = 0; n < 3; n++)
                 octArr[n] = n;
             for (int n = 0; n < 3; n++) {
-                basicChord(chords[0], time, 5, new double[] { octArr[n] }, 2 + i / 3,0.5);
-                basicChord(chords[1], time + 3, 5, new double[] { octArr[n] }, 2 + i / 3,0);
+                basicChord(chords[0], time, 5 + octArr[n], 1, 2 + i / 3, 0.5);
+                basicChord(chords[1], time + 3, 5 + octArr[n], 1, 2 + i / 3, 0);
             }
             time += 3;
         }
@@ -80,8 +83,8 @@ public class Composer {
                 octArr[n] = n;
             shuffleArray(octArr);
             for (int n = 0; n < 7; n++) {
-                basicChord(chords[0], time, 4, new double[] { octArr[n] }, n % 4,0.25 * Math.random());
-                basicChord(chords[1], time + 3, 4, new double[] { octArr[n] }, n % 4,0.25 * Math.random());
+                basicChord(chords[0], time, 4 + octArr[n], 1, n % 4, 0.25 * Math.random());
+                basicChord(chords[1], time + 3, 4 + octArr[n], 1, n % 4, 0.25 * Math.random());
             }
             time += 3;
         }
@@ -90,18 +93,35 @@ public class Composer {
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
             for (int n = 0; n < 7; n++) {
-                basicChord(chords[0], time, 4, new double[] { n, n + 4 / 12.0, n + 7 / 12.0 }, n % 4,2 * Math.random());
-                basicChord(chords[1], time + 3, 4, new double[] { n, n + 3 / 12.0, n + 7 / 12.0 }, n % 4, 2 * Math.random());
+                basicChord(chords[0], time, 4 + n, 4, n % 4,
+                        2 * Math.random());
+                basicChord(chords[1], time + 3, 4 + n, 5, n % 4,
+                        2 * Math.random());
             }
             time += 3;
         }
+
+
+
+        /*
+        need to add final ting browser side so that it's synchronized
+        time += 3;
+
+        for (int i = 0; i < 20; i++) {
+            SoundEvent soundEvent = new SoundEvent(event, (int) Math.rint(time * 1000), eventUser, seq.modeTrans);
+            new Note(20 * Math.log(2077 / c0Freq) / Math.log(2), 0, 1, 1, eventUser);
+            eventUser++;
+            event++;
+            composition.add(soundEvent);
+        }
+             */
 
         System.out.println(seq.myGame);
         writeComposition();
         recordComposition();
     }
 
-    public static void basicChord(int[] chord, double time, int oct, double[] doublingOcts, int arpSetting,
+    public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,
             double attackDur) {
         double dur = 0.05;
         double relVol = 1;
@@ -171,33 +191,32 @@ public class Composer {
             melody[i + c1.length] = c2[i];
         }
         while (relTime < 6) {
-            for (double dbleOct : doublingOcts) {
-                int u = user;
-                if (relTime == 0)
-                    u = eventUser;// first note goes to person triggering the event
-                Note note = new Note(melody[user % melody.length] + 20 * dbleOct, // chord[(int)(Math.random() *
-                                                                                  // chord.length)] + 20 * oct,
-                        (int) Math.rint(1000 * (relTime + attackDur)), relVol, 1,
-                        u);
+            int u = user;
+            if (relTime == 0)
+                u = eventUser;// first note goes to person triggering the event
+            Note note = new Note(melody[user % melody.length], // chord[(int)(Math.random() *
+                                                               // chord.length)] + 20 * oct,
+                    (int) Math.rint(1000 * (relTime + attackDur)), relVol, timbre,
+                    u);
 
-                soundEvent.add(note);
-                if (attackDur > 0
-                && Math.random() < 3 * attackDur / 6.0) {//thins it out so that density is the same as in decay
-                    Note note1 = new Note(melody[user % melody.length] + 20 * dbleOct, // chord[(int)(Math.random() *
-                                                                                       // chord.length)] + 20 * oct,
-                            (int) Math.rint(1000 * (attackDur - attackDur * relTime / 6.0)), relVol, 1,
-                            u);
-                    soundEvent.add(note1);
-                }
-                if (relTime != 0)
-                    user++;
+            soundEvent.add(note);
+            if (attackDur > 0
+                    && Math.random() < 1.5 * attackDur / 6.0) {// thins it out so that density is the same as in decay
+                Note note1 = new Note(melody[user % melody.length], // chord[(int)(Math.random() *
+                                                                    // chord.length)] + 20 * oct,
+                        (int) Math.rint(1000 * (attackDur - attackDur * relTime / 6.0)), relVol, timbre,
+                        u);
+                soundEvent.add(note1);
             }
+            if (relTime != 0)
+                user++;
+
             relTime += dur;
             dur *= 1.01;
             relVol *= 0.95;
         }
-        Collections.sort(soundEvent.notes, new Comparator<Note>(){
-            public int compare(Note a, Note b){
+        Collections.sort(soundEvent.notes, new Comparator<Note>() {
+            public int compare(Note a, Note b) {
                 return a.relativeTime - b.relativeTime;
             }
         });
@@ -213,25 +232,33 @@ public class Composer {
             double eventVol = Math.random() * 0.5 + 0.5;
             for (Note note : soundEvent.notes) {
                 recordNote(c0Freq * Math.pow(2, note.hs / 20.0), eventTime + note.relativeTime / 1000.0,
-                        eventVol * note.relativeVol);
+                        eventVol * note.relativeVol, note.sampleNum);
             }
         }
         ww.render(1);
     }
 
-    public static void recordNote(double freq, double time, double vol) {
+    public static void loadSampleFreqs() {
+        sampleFreqs = new ArrayList<SampleFreq>();
+        for (int i = 1; i <= 5; i++) {
+            sampleFreqs.add(new SampleFreq(2077, i));
+        }
+    }
+
+    public static void recordNote(double freq, double time, double vol, int timbre) {
         double f1 = freq;
-        double[] processed = new double[(int) (sig.length * f2 / f1)];
+        SampleFreq sf = sampleFreqs.get(timbre - 1);
+        double[] processed = new double[(int) (sf.sample.length * sf.freq / f1)];
         int startFrame = (int) Math.rint(time * WaveWriter.SAMPLE_RATE);
 
         for (int i = 0; i < processed.length; i++) {
-            double exInd = i * f1 / f2;
+            double exInd = i * f1 / sf.freq;
             int index = (int) exInd;
             double fract = exInd - index;
-            double frame1 = sig[index];
+            double frame1 = sf.sample[index];
             double frame2 = frame1;
-            if (index + 1 < sig.length)
-                frame2 = sig[index + 1];
+            if (index + 1 < sf.sample.length)
+                frame2 = sf.sample[index + 1];
             double frame = frame1 * (1 - fract) + frame2 * fract;
             frame *= vol;
             try {
@@ -239,6 +266,37 @@ public class Composer {
             } catch (Exception e) {
                 System.out.println(e);
             }
+        }
+    }
+
+    public static void createTimbres() {
+        double[][] octsData = { { 2, 0, -1 }, { 3, 0, -1, 1 }, { 4, 0, 4 / 12.0, 7 / 12.0 },
+                { 5, 0, 4 / 12.0, 7 / 12.0 } };
+
+        for (double[] od : octsData) {
+            WaveWriter ww = new WaveWriter("" + ((int) od[0]));
+            for (int n = 1; n < od.length; n++) {
+                double f1 = f2 * Math.pow(2, od[n]);
+                double[] processed = new double[(int) (sig.length * f2 / f1)];
+
+                for (int i = 0; i < processed.length; i++) {
+                    double exInd = i * f1 / f2;
+                    int index = (int) exInd;
+                    double fract = exInd - index;
+                    double frame1 = sig[index];
+                    double frame2 = frame1;
+                    if (index + 1 < sig.length)
+                        frame2 = sig[index + 1];
+                    double frame = frame1 * (1 - fract) + frame2 * fract;
+                    // frame *= 1;
+                    try {
+                        ww.df[0][i] += frame;
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+            ww.render(1);
         }
     }
 

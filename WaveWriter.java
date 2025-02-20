@@ -72,9 +72,12 @@ public class WaveWriter {
 
             AudioFormat af = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, SAMPLE_RATE, 16, 1, 2, SAMPLE_RATE,
                     false);
+                    String fn = fileName;
+                    if(chans > 1)
+                        fn += chan;
             try {
                 AudioSystem.write(new AudioInputStream(mpis, af, mpis.framesToRead), AudioFileFormat.Type.WAVE,
-                        new File(fileName + chan + ".wav"));
+                        new File(fn + ".wav"));
             } catch (Exception e) {
             }
         }

@@ -1,18 +1,24 @@
 var local = true;
 
-AWS.config.update({
-    region: "us-east-2",
-    identityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
-});
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
-});
+ function getDDB(){
+    AWS.config.update({
+        region: "us-east-2",
+        identityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
+    });
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: "us-east-2:946b7ec1-dda0-4ef9-9b2f-e05141fc25d0"
+    });
+    
+    // Create DynamoDB service object
+    var addb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
+    
+    if(local)
+        addb = new LocalDBClient();
+    return addb;
+}
 
-// Create DynamoDB service object
-var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
-if(local)
-    ddb = new LocalDBClient();
+var ddb = getDDB();
 
 
 var userNumText = document.createElement("p");
