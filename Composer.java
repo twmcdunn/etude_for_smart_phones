@@ -9,9 +9,9 @@ public class Composer {
     public static double f2 = 2077;
     public static WaveWriter ww = new WaveWriter("mockup");
     public static double c0Freq = 440 * Math.pow(2, 3 / 12.0) * Math.pow(2, -5);
-    public static int user = 0, event = 0, eventUser = 0;
+    public static int user = 0, event = 0, eventUser = 0, attackNum = 1;
     public static Sequencer seq = new Sequencer(3);
-    public static ArrayList<SampleFreq> sampleFreqs;
+    public static ArrayList<SampleFreq> sampleFreqs, attackSampeFreqs;
 
     public static void main(String[] args) {
         new Composer();
@@ -101,20 +101,19 @@ public class Composer {
             time += 3;
         }
 
-
-
         /*
-        need to add final ting browser side so that it's synchronized
-        time += 3;
-
-        for (int i = 0; i < 20; i++) {
-            SoundEvent soundEvent = new SoundEvent(event, (int) Math.rint(time * 1000), eventUser, seq.modeTrans);
-            new Note(20 * Math.log(2077 / c0Freq) / Math.log(2), 0, 1, 1, eventUser);
-            eventUser++;
-            event++;
-            composition.add(soundEvent);
-        }
-             */
+         * need to add final ting browser side so that it's synchronized
+         * time += 3;
+         * 
+         * for (int i = 0; i < 20; i++) {
+         * SoundEvent soundEvent = new SoundEvent(event, (int) Math.rint(time * 1000),
+         * eventUser, seq.modeTrans);
+         * new Note(20 * Math.log(2077 / c0Freq) / Math.log(2), 0, 1, 1, eventUser);
+         * eventUser++;
+         * event++;
+         * composition.add(soundEvent);
+         * }
+         */
 
         System.out.println(seq.myGame);
         writeComposition();
@@ -190,10 +189,20 @@ public class Composer {
             melody[i] = c1[i];
             melody[i + c1.length] = c2[i];
         }
+        WaveWriter attackWriter = null;
+        if (attackDur > 0)
+            attackWriter = new WaveWriter((100 + attackNum) + "");
+
         while (relTime < 6) {
             int u = user;
-            if (relTime == 0)
-                u = eventUser;// first note goes to person triggering the event
+            if (relTime == 0) {
+                // u = eventUser;// first note goes to person triggering the event
+                if (attackDur > 0) {
+                    int t = 100 + attackNum;
+                    Note note = new Note(0, (int) Math.rint(1000 * (relTime)), relVol, t, eventUser);
+                    soundEvent.add(note);
+                }
+            }
             Note note = new Note(melody[user % melody.length], // chord[(int)(Math.random() *
                                                                // chord.length)] + 20 * oct,
                     (int) Math.rint(1000 * (relTime + attackDur)), relVol, timbre,
@@ -201,12 +210,20 @@ public class Composer {
 
             soundEvent.add(note);
             if (attackDur > 0
-                    && Math.random() < 1.5 * attackDur / 6.0) {// thins it out so that density is the same as in decay
-                Note note1 = new Note(melody[user % melody.length], // chord[(int)(Math.random() *
-                                                                    // chord.length)] + 20 * oct,
-                        (int) Math.rint(1000 * (attackDur - attackDur * relTime / 6.0)), relVol, timbre,
-                        u);
-                soundEvent.add(note1);
+            // && Math.random() < attackDur / 6.0// thins it out so that density is the same
+            // as in decay
+            ) {
+                /*
+                 * Note note1 = new Note(melody[user % melody.length], //
+                 * chord[(int)(Math.random() *
+                 * // chord.length)] + 20 * oct,
+                 * (int) Math.rint(1000 * (attackDur - attackDur * relTime / 6.0)), relVol,
+                 * timbre,
+                 * u);
+                 * soundEvent.add(note1);
+                 */
+                recordNote(c0Freq * Math.pow(2, melody[user % melody.length] / 20.0),
+                        attackDur - attackDur * relTime / 6.0, relVol, timbre, attackWriter);
             }
             if (relTime != 0)
                 user++;
@@ -215,6 +232,12 @@ public class Composer {
             dur *= 1.01;
             relVol *= 0.95;
         }
+
+        if (attackDur > 0) {
+            attackWriter.render(1);
+            attackNum++;
+        }
+
         Collections.sort(soundEvent.notes, new Comparator<Note>() {
             public int compare(Note a, Note b) {
                 return a.relativeTime - b.relativeTime;
@@ -227,6 +250,10 @@ public class Composer {
 
     // assume audience members might vary their responses by about 30 seconds
     public static void recordComposition() {
+        attackSampeFreqs = new ArrayList<SampleFreq>();
+        for(int i = 101; i < attackNum + 100; i++){
+            attackSampeFreqs.add(new SampleFreq(1, i));
+        }
         for (SoundEvent soundEvent : composition) {
             double eventTime = soundEvent.activationTime / 1000.0 + 20 * Math.random();
             double eventVol = Math.random() * 0.5 + 0.5;
@@ -246,8 +273,18 @@ public class Composer {
     }
 
     public static void recordNote(double freq, double time, double vol, int timbre) {
+        recordNote(freq, time, vol, timbre, ww);
+    }
+
+    public static void recordNote(double freq, double time, double vol, int timbre, WaveWriter ww) {
         double f1 = freq;
-        SampleFreq sf = sampleFreqs.get(timbre - 1);
+        SampleFreq sf = null;
+        if (timbre < 100) {
+            sf = sampleFreqs.get(timbre - 1);
+        } else {
+            sf = attackSampeFreqs.get(timbre - 101);
+            f1 = sf.freq;
+        }
         double[] processed = new double[(int) (sf.sample.length * sf.freq / f1)];
         int startFrame = (int) Math.rint(time * WaveWriter.SAMPLE_RATE);
 
