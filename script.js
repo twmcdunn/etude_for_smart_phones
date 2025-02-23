@@ -178,6 +178,7 @@ function queueSounds() {
 }
 
 var buffers = [];
+var attackBuffers = [];
 function queueSounds1(){
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
@@ -191,9 +192,15 @@ function queueSounds1(){
         })
     });
 
-    for (let n = 1; n <= 1; n++) {//n is sampleNum
+    for (let n = 1; n <= 5; n++) {//n is sampleNum
         getAudioBuffer(n, (buff) => {
             buffers.push(buff);
+        });
+    }
+
+    for (let n = 101; n <= 293; n++) {//n is sampleNum
+        getAudioBuffer(n, (buff) => {
+            attackBuffers.push(buff);
         });
     }
 }
@@ -325,7 +332,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
 }
 
 function getAudioBuffer(sampleNum, callback){
-    var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".mp3";
+    var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".wav";//could go back to mp3 w/ audacity batch process if needed
     var req = new XMLHttpRequest();
     req.responseType = "arraybuffer";
     req.onload = function(){
@@ -342,7 +349,14 @@ function playNote(hs, vol, sampleNum) {
 
     //console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
-    var buff = buffers[sampleNum - 1];
+    var buff = null;
+    if(sampleNum < 100) {
+        buff = buffers[sampleNum - 1];
+    }
+    else{
+        buff = attackBuffers[sampleNum - 101];
+    }
+
 
     if (audioContext.state != "running") {
         audioContext.resume();
