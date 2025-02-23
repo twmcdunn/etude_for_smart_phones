@@ -11,7 +11,7 @@ const {Howl, Howler} = require('howler');
 
 // Importing the required modules
 
-var local = true;
+var local = false;
 
 AWS.config.update({
     region: "us-east-2",
