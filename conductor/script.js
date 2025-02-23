@@ -25,6 +25,10 @@ var userNumText = document.createElement("p");
 userNumText.id = "userNumText";
 document.body.appendChild(userNumText);
 
+var qrCode = document.createElement("img");
+qrCode.src = "../efsp.svg";
+document.body.appendChild(qrCode);
+
 if (local)
     ddb.connect(resetDatabase);
 else
