@@ -72,10 +72,10 @@ public class Composer {
                 basicChord(chords[0], time, 5 + octArr[n], 1, 2 + i / 3, 0.5);
                 basicChord(chords[1], time + 3, 5 + octArr[n], 1, 2 + i / 3, 0);
             }
-            time += 3;
+            time += 4;
         }
 
-        // 18 sec of chords in 7 voices
+        // 60 sec of chords in 7 voices
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
             int[] octArr = new int[7];
@@ -86,10 +86,10 @@ public class Composer {
                 basicChord(chords[0], time, 4 + octArr[n], 1, n % 4, 0.25 * Math.random());
                 basicChord(chords[1], time + 3, 4 + octArr[n], 1, n % 4, 0.25 * Math.random());
             }
-            time += 3;
+            time += 10;
         }
 
-        // 18 sec of chords in 7 voices w/ planing triads
+        // 60 sec of chords in 7 voices w/ planing triads
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
             for (int n = 0; n < 7; n++) {
@@ -98,7 +98,7 @@ public class Composer {
                 basicChord(chords[1], time + 3, 4 + n, 5, n % 4,
                         2 * Math.random());
             }
-            time += 3;
+            time += 10;
         }
 
         /*
