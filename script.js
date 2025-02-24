@@ -343,7 +343,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
 }
 
 function getAudioBuffer(sampleNum, callback) {
-    var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".wav";//could go back to mp3 w/ audacity batch process if needed
+    var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds" + sampleNum + ".mp3";//could go back to mp3 w/ audacity batch process if needed
     var req = new XMLHttpRequest();
     req.responseType = "arraybuffer";
     req.onload = function () {

@@ -18,7 +18,7 @@ function queueSounds1() {
         audioContext.resume();
     }
 
-    for (let n = 1; n <= 7; n++) {//n is sampleNum
+    for (let n = 1; n <= 5; n++) {//n is sampleNum
         getAudioBuffer(n, (buff) => {
             buffers.push(buff);
         });
@@ -33,7 +33,7 @@ function queueSounds1() {
 
 
 function getAudioBuffer(sampleNum, callback) {
-    var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".wav";//could go back to mp3 w/ audacity batch process if needed
+    var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + sampleNum + ".mp3";//could go back to mp3 w/ audacity batch process if needed
     var req = new XMLHttpRequest();
     req.responseType = "arraybuffer";
     req.onload = function () {
