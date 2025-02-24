@@ -11,7 +11,7 @@ const {Howl, Howler} = require('howler');
 
 // Importing the required modules
 
-var local = false;
+var local = true;
 
 AWS.config.update({
     region: "us-east-2",
@@ -139,7 +139,7 @@ function updateAndGetUserNum() {
 
 }
 
-function backgroundSound(){
+function backgroundSound() {
     var osc = new OscillatorNode(audioContext);
     osc.connect(audioContext.destination);
     if (audioContext.state != "running") {
@@ -149,7 +149,7 @@ function backgroundSound(){
 }
 
 var c0Freq = 440 * (2 ** (3 / 12)) * (2 ** -5);
-var refFreqs = [2077];
+var refFreqs = [2077, 2077, 2077, 2077, 2077];
 var sounds = [];
 function queueSounds() {
     for (let n = 1; n <= 1; n++) {//n is sample num
@@ -165,7 +165,7 @@ function queueSounds() {
             track.connect(audioContext.destination);
             soundArr.push(audio);
             */
-            
+
             getAudioBuffer(n, (audio) => {
                 soundArr.push(audio);
             });
@@ -179,7 +179,7 @@ function queueSounds() {
 
 var buffers = [];
 var attackBuffers = [];
-function queueSounds1(){
+function queueSounds1() {
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
             //trk.enabled = false;
@@ -298,45 +298,56 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         //console.log("now: " + (new Date().getTime()));
 
         //console.log("NOTE SCHEDULE: " + (Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
-        
 
-        var buff = buffers[note.sampleNum - 1];
+
+        var buff = null;
+        if (Number(note.sampleNum) < 100) {
+            buff = buffers[Number(note.sampleNum) - 1];
+        }
+        else {
+            buff = attackBuffers[Number(note.sampleNum) - 101];
+        }
 
         if (audioContext.state != "running") {
             audioContext.resume();
         }
-    
+
         const source = audioContext.createBufferSource();
         source.buffer = buff;
         const gainNode = audioContext.createGain();
         gainNode.gain.value = Number(eventVol) * Number(note.relativeVol) * (0.5 ** (Number(audioContext.destination.numberOfInputs) + 1));
         source.connect(gainNode);
         gainNode.connect(audioContext.destination);
-    
-       
-        source.playbackRate.value = (c0Freq * (2 ** (note.hs / 20.0))) / refFreqs[note.sampleNum - 1];
+
+        if (Number(note.sampleNum) < 100) {
+            //source.playbackRate.value = (c0Freq * (2 ** (note.hs / 20.0))) / refFreqs[Number(note.sampleNum) - 1];
+            var ratio = (c0Freq * (2 ** (note.hs / 20.0))) / refFreqs[Number(note.sampleNum) - 1];
+            var cents = Math.log2(ratio) * 1200;
+            //console.log("CENTS: " + cents);
+            source.detune.value = cents;
+        }
         if (audioContext.state != "running") {
             audioContext.resume();
         }
-        source.start(Math.max(audioContext.currentTime + 
-            ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0),0));
+        source.start(Math.max(audioContext.currentTime +
+            ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0), 0));
 
         /*
         noteIntervals.push(setInterval(function () {
             clearInterval(noteIntervals.shift());
-            playNote(note.hs, note.relativeVol * eventVol, note.sampleNum);
+            playNote(note.hs, note.relativeVol * eventVol, Number(note.sampleNum));
         }, Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
         */
     }
     scheduleEventListener();
 }
 
-function getAudioBuffer(sampleNum, callback){
+function getAudioBuffer(sampleNum, callback) {
     var url = "https://twmcdunn.github.io/etude_for_smart_phones/" + sampleNum + ".wav";//could go back to mp3 w/ audacity batch process if needed
     var req = new XMLHttpRequest();
     req.responseType = "arraybuffer";
-    req.onload = function(){
-        audioContext.decodeAudioData(req.response, function(buffer){
+    req.onload = function () {
+        audioContext.decodeAudioData(req.response, function (buffer) {
             callback(buffer);
         })
     };
@@ -350,10 +361,10 @@ function playNote(hs, vol, sampleNum) {
     //console.log("PLAY NOTE ", hs, vol, sampleNum);
     //c0Freq * Math.pow(2, note.hs/20.0)
     var buff = null;
-    if(sampleNum < 100) {
+    if (sampleNum < 100) {
         buff = buffers[sampleNum - 1];
     }
-    else{
+    else {
         buff = attackBuffers[sampleNum - 101];
     }
 
@@ -366,25 +377,25 @@ function playNote(hs, vol, sampleNum) {
     source.buffer = buff;
     source.connect(audioContext.destination);
 
-   
-    source.playbackRate.value = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+    if (sampleNum < 100)
+        source.playbackRate.value = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
     if (audioContext.state != "running") {
         audioContext.resume();
     }
     source.start();
-     //sound.preservesPitch = false;
-   /*
-    sound.addEventListener('timeupdate', function(){
-        if(!isNaN(sound.currentTime)) {
-            sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
-        }
-    });
-    */
+    //sound.preservesPitch = false;
+    /*
+     sound.addEventListener('timeupdate', function(){
+         if(!isNaN(sound.currentTime)) {
+             sound.playbackRate = (c0Freq * (2 ** (hs / 20.0))) / refFreqs[sampleNum - 1];
+         }
+     });
+     */
     //console.log("RATE: " + sound.playbackRate);
     //sound.volume = vol * 0.1;
     //sound.currentTime = 0;
     //sound.muted = false;
-   
+
     /*
     setTimeout(function(){
         sound.muted = true;
@@ -393,7 +404,7 @@ function playNote(hs, vol, sampleNum) {
     */
 
     //var audio = //new Audio("./" + sampleNum + ".wav");
-    
+
 
     /*
     var track = audioContext.createMediaElementSource(audio);

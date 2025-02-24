@@ -1,4 +1,4 @@
-var local = false;
+var local = true;
 
  function getDDB(){
     AWS.config.update({
