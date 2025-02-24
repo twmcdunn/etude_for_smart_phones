@@ -18,7 +18,7 @@ function queueSounds1() {
         audioContext.resume();
     }
 
-    for (let n = 1; n <= 6; n++) {//n is sampleNum
+    for (let n = 1; n <= 7; n++) {//n is sampleNum
         getAudioBuffer(n, (buff) => {
             buffers.push(buff);
         });
@@ -46,7 +46,7 @@ function getAudioBuffer(sampleNum, callback) {
 }
 
 function playOct4() {
-    var buff = buffers[5];
+    var buff = buffers[6];
 
     if (audioContext.state != "running") {
         audioContext.resume();
