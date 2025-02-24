@@ -35,7 +35,7 @@ public class Composer {
             basicChord(chords[0], time, 6, 1, 0, ad);
             ad = 0;
             basicChord(chords[1], time + 3, 6, 1, 0, ad);
-            time += 3;
+            time += 4;
         }
 
         time += 20; // 20 seconds to breath
@@ -45,8 +45,8 @@ public class Composer {
             int[][] chords = seq.getChords();
             basicChord(chords[0], time, 6, 2, i / 3, 0);
 
-            basicChord(chords[1], time + 3, 6, 2, i / 3, 1);
-            time += 3;
+            basicChord(chords[1], time + 3, 6, 2, i / 3, 3);
+            time += 4;
         }
 
         time += 12; // 12 seconds to breath
@@ -59,7 +59,7 @@ public class Composer {
 
             basicChord(chords[1], time + 3, 6, 3, 1 + i / 3, 0);
 
-            time += 3;
+            time += 4;
         }
 
         // 18 sec of chords in 3 voices
@@ -69,7 +69,7 @@ public class Composer {
             for (int n = 0; n < 3; n++)
                 octArr[n] = n;
             for (int n = 0; n < 3; n++) {
-                basicChord(chords[0], time, 5 + octArr[n], 1, 2 + i / 3, 0.5);
+                basicChord(chords[0], time, 5 + octArr[n], 1, 2 + i / 3, 2);
                 basicChord(chords[1], time + 3, 5 + octArr[n], 1, 2 + i / 3, 0);
             }
             time += 4;
@@ -83,8 +83,8 @@ public class Composer {
                 octArr[n] = n;
             shuffleArray(octArr);
             for (int n = 0; n < 7; n++) {
-                basicChord(chords[0], time, 4 + octArr[n], 1, n % 4, 0.25 * Math.random());
-                basicChord(chords[1], time + 3, 4 + octArr[n], 1, n % 4, 0.25 * Math.random());
+                basicChord(chords[0], time, 4 + octArr[n], 1, n % 4, 3 * Math.random());
+                basicChord(chords[1], time + 3, 4 + octArr[n], 1, n % 4, 3 * Math.random());
             }
             time += 10;
         }
@@ -94,12 +94,18 @@ public class Composer {
             int[][] chords = seq.getChords();
             for (int n = 0; n < 7; n++) {
                 basicChord(chords[0], time, 4 + n, 4, n % 4,
-                        2 * Math.random());
+                        6 * Math.random());
                 basicChord(chords[1], time + 3, 4 + n, 5, n % 4,
-                        2 * Math.random());
+                        6 * Math.random());
             }
             time += 10;
         }
+
+        time += 30;
+
+        chords1 = seq.getChords();
+        basicChord(chords1[0], time, 6, 1, 0, 0);
+        basicChord(chords1[1], time + 3, 6, 1, 0, 0);
 
         /*
          * need to add final ting browser side so that it's synchronized
