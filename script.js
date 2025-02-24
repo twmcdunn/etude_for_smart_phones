@@ -179,7 +179,7 @@ function queueSounds() {
 
 var buffers = [];
 var attackBuffers = [];
-function queueSounds1() {
+async function queueSounds1() {
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
             //trk.enabled = false;
@@ -193,15 +193,28 @@ function queueSounds1() {
     });
 
     for (let n = 1; n <= 5; n++) {//n is sampleNum
+        const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3");
+        let buffer = await audioContext.decodeAudioData(await response.arrayBuffer());
+        buffers.push(buffer);//await getAudioBuffer(n)));
+
+        /*
         getAudioBuffer(n, (buff) => {
             buffers.push(buff);
         });
+        */
     }
 
     for (let n = 101; n <= 293; n++) {//n is sampleNum
+        const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3");
+        let buffer = await audioContext.decodeAudioData(await response.arrayBuffer());
+        attackBuffers.push(buffer);
+        //attackBuffers.push(await audioContext.decodeAudioData(await getAudioBuffer(n)));
+        /*
         getAudioBuffer(n, (buff) => {
             attackBuffers.push(buff);
         });
+
+        */
     }
 }
 
@@ -342,8 +355,8 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
     scheduleEventListener();
 }
 
-function getAudioBuffer(sampleNum, callback) {
-    var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds" + sampleNum + ".mp3";//could go back to mp3 w/ audacity batch process if needed
+ async function getAudioBuffer(sampleNum, callback) {
+    var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + sampleNum + ".mp3";//could go back to mp3 w/ audacity batch process if needed
     var req = new XMLHttpRequest();
     req.responseType = "arraybuffer";
     req.onload = function () {
@@ -351,8 +364,10 @@ function getAudioBuffer(sampleNum, callback) {
             callback(buffer);
         })
     };
-    req.open("GET", url);
-    req.send();
+    await req.open("GET", url);
+    await req.send();
+    var res = await req.response;
+    return res;
 }
 
 
