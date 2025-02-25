@@ -122,8 +122,8 @@ public class Composer {
          */
 
         System.out.println(seq.myGame);
-        writeComposition();
-        recordComposition();
+        //writeComposition();
+       // recordComposition();
     }
 
     public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,

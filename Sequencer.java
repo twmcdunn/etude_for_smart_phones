@@ -327,6 +327,15 @@ public class Sequencer {
         }
 
         modeTrans = lastBoard.modeTrans;
+        String cstr = "";
+        for(int[] c: chords){
+            cstr +=  "[";
+            for(int n: c)
+                cstr += n + ",";
+            cstr +=  "]";
+        }
+
+        System.out.println(cstr);
         return chords;
     }
 
