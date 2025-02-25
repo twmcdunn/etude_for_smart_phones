@@ -45,13 +45,13 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     document.body.appendChild(button);
 }
 
-var audioContext
+var audioContext;
 try {
     audioContext = new AudioContext();
     StartAudioContext(audioContext);
 }
 catch (e) {
-    alert("This browser doesn't support web audio api");
+    alert("Error, your phone is a dinosaur. ;)   uhh, you can just listen.");
 }
 
 
@@ -146,43 +146,11 @@ function updateAndGetUserNum() {
 
 }
 
-function backgroundSound() {
-    var osc = new OscillatorNode(audioContext);
-    osc.connect(audioContext.destination);
-    if (audioContext.state != "running") {
-        audioContext.resume();
-    }
-    osc.start();
-}
+
 
 var c0Freq = 440 * (2 ** (3 / 12)) * (2 ** -5);
 var refFreqs = [2077, 2077, 2077, 2077, 2077];
 var sounds = [];
-function queueSounds() {
-    for (let n = 1; n <= 1; n++) {//n is sample num
-        var soundArr = [];
-        for (let i = 0; i < 20; i++) {
-            /*
-            var audio = new Audio("./" + n + ".mp3");//new Howl({ src: ['./' + n + '.mp3'] });
-            //audio.loop = true;
-            //audio.muted = true;
-            //audio.play();
-            //audio.load();
-            var track = audioContext.createMediaElementSource(audio);
-            track.connect(audioContext.destination);
-            soundArr.push(audio);
-            */
-
-            getAudioBuffer(n, (audio) => {
-                soundArr.push(audio);
-            });
-        }
-        sounds.push(soundArr);
-    }
-    if (audioContext.state != "running") {
-        audioContext.resume();
-    }
-}
 
 var buffers = [];
 var attackBuffers = [];
@@ -352,29 +320,9 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         source.start(Math.max(audioContext.currentTime +
             ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0), 0));
 
-        /*
-        noteIntervals.push(setInterval(function () {
-            clearInterval(noteIntervals.shift());
-            playNote(note.hs, note.relativeVol * eventVol, Number(note.sampleNum));
-        }, Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())));
-        */
+        
     }
     scheduleEventListener();
-}
-
-async function getAudioBuffer(sampleNum, callback) {
-    var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + sampleNum + ".mp3";//could go back to mp3 w/ audacity batch process if needed
-    var req = new XMLHttpRequest();
-    req.responseType = "arraybuffer";
-    req.onload = function () {
-        audioContext.decodeAudioData(req.response, function (buffer) {
-            callback(buffer);
-        })
-    };
-    await req.open("GET", url);
-    await req.send();
-    var res = await req.response;
-    return res;
 }
 
 
