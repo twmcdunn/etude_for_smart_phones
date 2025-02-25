@@ -161,7 +161,7 @@ function checkProgress() {//force events to take place if its been 20 seconds si
 }
 
 function instantiateSoundEvent(eventVol) {
-    deactivateEvent();
+    //deactivateEvent();
     console.log("EVENT INSTANTIATED @ ACTIVE = " + activeSoundEvents);
 
     if (!Number.isFinite(eventVol)) eventVol = Math.random();//for timeouts (and testing)
