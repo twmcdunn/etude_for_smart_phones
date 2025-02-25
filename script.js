@@ -46,12 +46,12 @@ for (let i = 0; i < buttonFuncs.length; i++) {
 }
 var AudioContext = window.AudioContext // Default
     || window.webkitAudioContext // Safari and old versions of Chrome
-    || false; 
-    
+    || false;
+
 var audioContext;
 try {
     audioContext = new AudioContext();
-    //StartAudioContext(audioContext);
+    StartAudioContext(audioContext);
 }
 catch (e) {
     alert(e + " AN Error, your phone is a dinosaur. ;) 1  uhh, you can just listen. 1");
@@ -158,6 +158,9 @@ var sounds = [];
 var buffers = [];
 var attackBuffers = [];
 async function queueSounds1() {
+    if (audioContext.state != "running") {
+        audioContext.resume();
+    }
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
             //trk.enabled = false;
@@ -323,7 +326,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         source.start(Math.max(audioContext.currentTime +
             ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0), 0));
 
-        
+
     }
     scheduleEventListener();
 }
