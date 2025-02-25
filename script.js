@@ -45,12 +45,15 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     document.body.appendChild(button);
 }
 
-alert("BUTTONS CREATED");
-var audioContext = new AudioContext();
+var audioContext
+try {
+    audioContext = new AudioContext();
+    StartAudioContext(audioContext);
+}
+catch (e) {
+    alert("This browser doesn't support web audio api");
+}
 
-alert("AUDIO API CREATED");
-StartAudioContext(audioContext);
-alert("AUDIO API STARTED");
 
 async function test() {
     console.log("test");
@@ -359,7 +362,7 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
     scheduleEventListener();
 }
 
- async function getAudioBuffer(sampleNum, callback) {
+async function getAudioBuffer(sampleNum, callback) {
     var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + sampleNum + ".mp3";//could go back to mp3 w/ audacity batch process if needed
     var req = new XMLHttpRequest();
     req.responseType = "arraybuffer";
@@ -442,7 +445,7 @@ function activateSoundEvent() {
     timeOutsForEventInstantiation.push(setTimeout(deactivateEvent, 20000));
 }
 
-function deactivateEvent(){
+function deactivateEvent() {
     clearTimeout(timeOutsForEventInstantiation.shift());
     activeSoundEvents--;
     if (activeSoundEvents == 0) {
