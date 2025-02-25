@@ -51,7 +51,7 @@ try {
     //StartAudioContext(audioContext);
 }
 catch (e) {
-    alert("Error, your phone is a dinosaur. ;) 1  uhh, you can just listen. 1");
+    alert(e + " AN Error, your phone is a dinosaur. ;) 1  uhh, you can just listen. 1");
 }
 
 
