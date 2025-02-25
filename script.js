@@ -48,10 +48,10 @@ for (let i = 0; i < buttonFuncs.length; i++) {
 var audioContext;
 try {
     audioContext = new AudioContext();
-    StartAudioContext(audioContext);
+    //StartAudioContext(audioContext);
 }
 catch (e) {
-    alert("Error, your phone is a dinosaur. ;)   uhh, you can just listen.");
+    alert("Error, your phone is a dinosaur. ;) 1  uhh, you can just listen. 1");
 }
 
 
