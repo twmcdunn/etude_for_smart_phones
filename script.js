@@ -45,8 +45,12 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     document.body.appendChild(button);
 }
 
+alert("BUTTONS CREATED");
 var audioContext = new AudioContext();
+
+alert("AUDIO API CREATED");
 StartAudioContext(audioContext);
+alert("AUDIO API STARTED");
 
 async function test() {
     console.log("test");
