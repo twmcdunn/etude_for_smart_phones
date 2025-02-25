@@ -35,7 +35,7 @@ var buttonTexts = [
     "Reset Local Data",
     "TEST",
     "Read Composition",
-    "Update and get user num"
+    "Update and get user num1"
 ];
 
 for (let i = 0; i < buttonFuncs.length; i++) {
@@ -100,7 +100,7 @@ function resetLocalData() {
     pieceStartTime = -1;
 
     var button = document.createElement("BUTTON");
-    button.id = "start";
+    //button.id = "start";
     button.innerText = "Start";
     button.onclick = updateAndGetUserNum;
     document.body.appendChild(button);
