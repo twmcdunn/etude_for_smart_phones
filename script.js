@@ -435,19 +435,22 @@ function activateSoundEvent() {
     if (activeSoundEvents == 1) {
         addInstructionsGraphic();
     }
-    timeOutsForEventInstantiation.push(setTimeout(instantiateSoundEvent, 20000));
+    timeOutsForEventInstantiation.push(setTimeout(deactivateEvent, 20000));
 }
 
-function instantiateSoundEvent(eventVol) {
+function deactivateEvent(){
     clearTimeout(timeOutsForEventInstantiation.shift());
     activeSoundEvents--;
-    console.log("EVENT INSTANTIATED @ ACTIVE = " + activeSoundEvents);
-
-    if (!Number.isFinite(eventVol)) eventVol = Math.random();//for timeouts (and testing)
-
     if (activeSoundEvents == 0) {
         removeInstructionsGraphic();
     }
+}
+
+function instantiateSoundEvent(eventVol) {
+    deactivateEvent();
+    console.log("EVENT INSTANTIATED @ ACTIVE = " + activeSoundEvents);
+
+    if (!Number.isFinite(eventVol)) eventVol = Math.random();//for timeouts (and testing)
 
     var params = {
         ExpressionAttributeValues: {

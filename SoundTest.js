@@ -1,6 +1,8 @@
 var audioContext = new AudioContext();
 var buffers = [];
 var attackBuffers = [];
+
+
 function queueSounds1() {
     navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
         mediastream.getAudioTracks().forEach((trk) => {
