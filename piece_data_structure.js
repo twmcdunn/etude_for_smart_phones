@@ -33,6 +33,40 @@ class Note {
 }
 
 function readComposition(userNum, totUsers, callback) {
+    var req = new XMLHttpRequest();
+    req.responseType = "text";
+    req.onload = function(){
+        var text = req.response;
+        const lines = text.split("\n");
+        for (let n = 0; n < lines.length; n++) {
+            if(lines[n] === "EVENT"){
+                var event = new SoundEvent(lines[n+1],lines[n+2],lines[n+3],lines[n+4]);
+                n += 5;
+                while(n < lines.length && lines[n] === "NOTE"){
+                    var note = new Note(lines[n+1],lines[n+2],lines[n+3],lines[n+4],lines[n+5], event);
+                    event.add(note);
+                    if(note.userNum % Number(totUsers) === Number(userNum)){
+                        myNotes.push(note);
+                    }
+                    n += 6;
+                }
+                soundEvents.push(event);
+                if(Number(event.userNum) % Number(totUsers) === Number(userNum)){
+                    /*
+                    console.log("claiming sound event,\n    num: " + Number(event.userNum) 
+                    + "\n    my user num: " + userNum + "\n    totUsers: " +  Number(totUsers));
+                        */
+                    mySoundEvents.push(event);
+                }
+            }
+        }
+        if(callback != undefined){
+            callback();
+        }
+    };
+    req.open("GET",dir + "composition.txt");
+    req.send();
+    /*
     fetch(dir + "composition.txt")
         .then((res) => res.text())
         .then((text) => {
@@ -52,25 +86,17 @@ function readComposition(userNum, totUsers, callback) {
                     }
                     soundEvents.push(event);
                     if(Number(event.userNum) % Number(totUsers) === Number(userNum)){
-                        /*
-                        console.log("claiming sound event,\n    num: " + Number(event.userNum) 
-                        + "\n    my user num: " + userNum + "\n    totUsers: " +  Number(totUsers));
-                            */
+                        
                         mySoundEvents.push(event);
                     }
                 }
             }
-
-            /*//sorting shouldn't be neccessary, events are stored in chronological order
-            mySoundEvents.sort((a, b) => {
-                return Number(a.activationTime) - Number(b.activationTime);
-            });
-*/
-            console.log("SIZE OF PIECE: " + soundEvents.length);
             if(callback != undefined){
                 callback();
             }
         })
         .catch((e) => console.error(e));
+
+        */
 }
 
