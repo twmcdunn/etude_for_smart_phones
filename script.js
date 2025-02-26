@@ -334,7 +334,13 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
             var ratio = (c0Freq * (2 ** (note.hs / 20.0))) / refFreqs[Number(note.sampleNum) - 1];
             var cents = Math.log2(ratio) * 1200;
             //console.log("CENTS: " + cents);
+
+            try{
             source.detune.value = cents;
+            }
+            catch(e){
+                source.playbackRate.value = ratio;
+            }
         }
         if (audioContext.state != "running") {
             audioContext.resume();
