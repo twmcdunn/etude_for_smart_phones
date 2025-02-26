@@ -33,6 +33,7 @@ class Note {
 }
 
 function readComposition(userNum, totUsers, callback) {
+    console.log("READING...");
     var req = new XMLHttpRequest();
     req.responseType = "text";
     req.onload = function(){
@@ -60,6 +61,8 @@ function readComposition(userNum, totUsers, callback) {
                 }
             }
         }
+
+        console.log("READ");
         if(callback != undefined){
             callback();
         }

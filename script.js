@@ -237,6 +237,7 @@ function checkIfStarted() {
 }
 
 function startPiece() {
+    console.log("STARTING");
     var params = {
         ExpressionAttributeValues: {
             ":a": { N: "-1" }
