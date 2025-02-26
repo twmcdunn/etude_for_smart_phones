@@ -179,6 +179,27 @@ async function queueSounds1() {
         //alert("NO Navigator");
     }
 
+    function loadSound(target, n, last) {
+        var url = "https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3";//could go back to mp3 w/ audacity batch process if needed
+        var req = new XMLHttpRequest();
+        req.responseType = "arraybuffer";
+        req.onload = function () {
+            audioContext.decodeAudioData(req.response, function (buffer) {
+                target.push(buffer);
+                if (n < last) {
+                    loadSound(target, n + 1, last);
+                }
+            })
+        };
+        req.open("GET", url);
+        req.send();
+    }
+
+    loadSound(buffers,1,5);
+
+    loadSound(attackBuffers,101,293);
+
+    /*
     for (let n = 1; n <= 5; n++) {//n is sampleNum
         const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3", {});
         let buffer = await audioContext.decodeAudioData(await response.arrayBuffer());
@@ -190,6 +211,7 @@ async function queueSounds1() {
         let buffer = await audioContext.decodeAudioData(await response.arrayBuffer());
         attackBuffers.push(buffer);
     }
+        */
 }
 
 
