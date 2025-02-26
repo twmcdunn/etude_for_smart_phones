@@ -176,32 +176,19 @@ async function queueSounds1() {
         });
     }
     catch (e) {
-        alert("NO Navigator");
+        //alert("NO Navigator");
     }
 
     for (let n = 1; n <= 5; n++) {//n is sampleNum
-        const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3");
+        const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3", {});
         let buffer = await audioContext.decodeAudioData(await response.arrayBuffer());
-        buffers.push(buffer);//await getAudioBuffer(n)));
-
-        /*
-        getAudioBuffer(n, (buff) => {
-            buffers.push(buff);
-        });
-        */
+        buffers.push(buffer);
     }
 
     for (let n = 101; n <= 293; n++) {//n is sampleNum
-        const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3");
+        const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3", {});
         let buffer = await audioContext.decodeAudioData(await response.arrayBuffer());
         attackBuffers.push(buffer);
-        //attackBuffers.push(await audioContext.decodeAudioData(await getAudioBuffer(n)));
-        /*
-        getAudioBuffer(n, (buff) => {
-            attackBuffers.push(buff);
-        });
-
-        */
     }
 }
 
