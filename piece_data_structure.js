@@ -66,7 +66,7 @@ function readComposition(userNum, totUsers, callback) {
                 return Number(a.activationTime) - Number(b.activationTime);
             });
 */
-            
+            console.log("SIZE OF PIECE: " + soundEvents.length);
             if(callback != undefined){
                 callback();
             }
