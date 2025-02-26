@@ -161,17 +161,23 @@ async function queueSounds1() {
     if (audioContext.state != "running") {
         audioContext.resume();
     }
-    navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
-        mediastream.getAudioTracks().forEach((trk) => {
-            //trk.enabled = false;
-            //trk.stop();
-            trk.applyConstraints({
-                autoGainControl: false,
-                noiseSuppression: false,
-                echoCancellation: false
-            });
-        })
-    });
+
+    try {
+        navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((mediastream) => {
+            mediastream.getAudioTracks().forEach((trk) => {
+                //trk.enabled = false;
+                //trk.stop();
+                trk.applyConstraints({
+                    autoGainControl: false,
+                    noiseSuppression: false,
+                    echoCancellation: false
+                });
+            })
+        });
+    }
+    catch (e) {
+        alert("NO Navigator");
+    }
 
     for (let n = 1; n <= 5; n++) {//n is sampleNum
         const response = await fetch("https://twmcdunn.github.io/etude_for_smart_phones/sounds/" + n + ".mp3");
