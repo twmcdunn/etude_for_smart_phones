@@ -447,7 +447,7 @@ function activateSoundEvent() {
     if (activeSoundEvents == 1) {
         addInstructionsGraphic();
     }
-    timeOutsForEventInstantiation.push(setTimeout(deactivateEvent, 20000));
+    timeOutsForEventInstantiation.push(setTimeout(instantiateSoundEvent, 15000));//deactivateEvent, 20000));
 }
 
 function deactivateEvent() {
