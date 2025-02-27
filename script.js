@@ -1,5 +1,5 @@
-import NoSleep from 'nosleep.js';
-
+//import NoSleep from 'nosleep.js';
+//const NoSleep = require(['nosleep.js']);
 //This video outlines the extensions needed in VS Code for 
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
 
@@ -217,6 +217,12 @@ async function queueSounds1() {
         attackBuffers.push(buffer);
     }
         */
+    try {
+        const wakeLock = await navigator.wakeLock.request("screen");
+    } catch (err) {
+        // the wake lock request fails - usually system related, such being low on battery
+        console.log(`${err.name}, ${err.message}`);
+    }
 }
 
 
@@ -244,7 +250,7 @@ function checkIfStarted() {
 var directionsInterval = -1;
 function startPiece() {
     console.log("STARTING");
-    directionsInterval = setInterval(animateDirections,500);
+    directionsInterval = setInterval(animateDirections, 500);
     var params = {
         ExpressionAttributeValues: {
             ":a": { N: "-1" }
@@ -500,14 +506,14 @@ function addInstructionsGraphic() {
 
     //document.body.appendChild(instantiateSoundEventButton);
     var str = "Move your phone DRAMATICALLY!  speed = volume";
-    
+
     var dir = document.getElementById("dir");
     dir.innerText = str;
 }
 
 
 function removeInstructionsGraphic() {
-    directionsInterval = setInterval(animateDirections,500);
+    directionsInterval = setInterval(animateDirections, 500);
 
     console.log("REMOVING GRAPHIC @ active sound events =" + activeSoundEvents);
     //document.body.removeChild(instantiateSoundEventButton);
@@ -525,65 +531,66 @@ var dots = 0;
 
 function getPermissions() {
 
-  try {
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
-      const permission = DeviceMotionEvent.requestPermission().then((permission) => {
-        //document.body.appendChild(document.createTextNode("PERMISSIONS RESULTS"));
-        if (permission === 'granted') {
+    try {
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            const permission = DeviceMotionEvent.requestPermission().then((permission) => {
+                //document.body.appendChild(document.createTextNode("PERMISSIONS RESULTS"));
+                if (permission === 'granted') {
+
+                }
+                else {
+
+                }
+                resolvedPermissions();
+            });
+
+            //document.body.appendChild(document.createTextNode("IOS 13 +"));
+            //document.body.appendChild(document.createTextNode("permmission" + permission));
 
         }
         else {
-
+            //document.body.appendChild(document.createTextNode("NOT IOS 13 +"));
+            resolvedPermissions();
         }
-        resolvedPermissions();
-      });
-
-      //document.body.appendChild(document.createTextNode("IOS 13 +"));
-      //document.body.appendChild(document.createTextNode("permmission" + permission));
+    }
+    catch (error) {
+        //document.body.appendChild(document.createTextNode("error..."));
+        //document.body.appendChild(document.createTextNode("error: " + error));
 
     }
-    else {
-      //document.body.appendChild(document.createTextNode("NOT IOS 13 +"));
-      resolvedPermissions();
-    }
-  }
-  catch (error) {
-    //document.body.appendChild(document.createTextNode("error..."));
-    //document.body.appendChild(document.createTextNode("error: " + error));
+    document.body.removeChild(button);
+    updateAndGetUserNum();
+    //var noSleep = new NoSleep();
+    //noSleep.enable();
 
-  }
-  document.body.removeChild(button);
-  updateAndGetUserNum();
-  var noSleep = new NoSleep();
-  noSleep.enable();
 }
 
-function animateDirections(){
-  var str = "Just listen for now";
-  for(let i = 0; i < dots % 4; i++){
-    str += ".";
-  }
-  dots++;
-  var dir = document.getElementById("dir");
-  dir.innerText = str;
+function animateDirections() {
+    var str = "Just listen for now";
+    for (let i = 0; i < dots % 4; i++) {
+        str += ".";
+    }
+    dots++;
+    var dir = document.getElementById("dir");
+    dir.innerText = str;
 }
 
 
 var accel = 0;
 
-function resolvedPermissions(){
-  window.ondevicemotion = (event) => {
-    var myAccel = (event.acceleration.x ** 2 + event.acceleration.y ** 2 + event.acceleration.z ** 2) ** 0.5;
-   accel = Math.max(myAccel, accel);
-   if(accel > 20 && myAccel < 1){
-   reportAccel();
-   }
-  };
+function resolvedPermissions() {
+    window.ondevicemotion = (event) => {
+        var myAccel = (event.acceleration.x ** 2 + event.acceleration.y ** 2 + event.acceleration.z ** 2) ** 0.5;
+        accel = Math.max(myAccel, accel);
+        if (accel > 20 && myAccel < 1) {
+            reportAccel();
+        }
+    };
 }
 
 
 
-function reportAccel(){
+function reportAccel() {
     //document.body.innerText = "accel: " + accel;
     //var dir = document.getElementById("dir");
     //dir.innerText = "accel: " + accel;
@@ -591,11 +598,11 @@ function reportAccel(){
     accel -= 20;
     accel /= 130.0;
 
-    if(directionsInterval === -1){
-      instantiateSoundEvent(accel);
+    if (directionsInterval === -1) {
+        instantiateSoundEvent(accel);
     }
 
-  accel = 0;
+    accel = 0;
 }
 
 
