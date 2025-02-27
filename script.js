@@ -60,6 +60,7 @@ catch (e) {
     alert(e + " AN Error, your phone is a dinosaur. ;) 1  uhh, you can just listen. 1");
 }
 
+var dirAni = false;
 
 async function test() {
     console.log("test");
@@ -250,7 +251,8 @@ function checkIfStarted() {
 var directionsInterval = -1;
 function startPiece() {
     console.log("STARTING");
-    directionsInterval = setInterval(animateDirections, 500);
+    //directionsInterval = setInterval(animateDirections, 500);
+    dirAni = true;
     var params = {
         ExpressionAttributeValues: {
             ":a": { N: "-1" }
@@ -292,6 +294,9 @@ function scheduleEventListener() {//"Even listeners" are really home grown
 }
 
 function listenForEvent() {
+    if(dirAni){
+        animateDirections();
+    }
     var eventNum = Number(myNotes[0].parentEventNum);
     var params = {
         ExpressionAttributeValues: {
@@ -506,7 +511,8 @@ function writeEventToDB(eventNum, eventVol) {
 
 var instantiateSoundEventButton = null;
 function addInstructionsGraphic() {
-    clearInterval(directionsInterval);
+    //clearInterval(directionsInterval);
+    dirAni = false;
     directionsInterval = -1;
     console.log("ADDING GRAPHIC @ active sound events =" + activeSoundEvents);
     instantiateSoundEventButton = document.createElement("BUTTON");
@@ -523,8 +529,8 @@ function addInstructionsGraphic() {
 
 
 function removeInstructionsGraphic() {
-    directionsInterval = setInterval(animateDirections, 500);
-
+    //directionsInterval = setInterval(animateDirections, 500);
+    dirAni = true;
     console.log("REMOVING GRAPHIC @ active sound events =" + activeSoundEvents);
     //document.body.removeChild(instantiateSoundEventButton);
 }
@@ -627,9 +633,11 @@ function flash() {
         document.body.style.backgroundColor = 'rgb(0, 0, 65)';
     flashVal = !flashVal;
     
-    if(flashCount === 7){
-        flashCount = 0;
+    if(flashCount >= 7){
         clearInterval(flashInterval);
+        flashVal = true;
+        document.body.style.backgroundColor = 'rgb(0, 0, 65)';
+        flashCount = 0;
     }
 }
 
