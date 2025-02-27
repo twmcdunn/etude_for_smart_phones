@@ -290,6 +290,7 @@ function scheduleEventListener() {//"Even listeners" are really home grown
     if(myNotes.length === 0)
         return;
     var t = Math.max(Number(myNotes[0].relativeTime) - 500, 50)
+    t = 50;
     eventListenerInterval = setInterval(listenForEvent, t);
 }
 
