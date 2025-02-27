@@ -589,7 +589,9 @@ function resolvedPermissions() {
 }
 
 
-
+var flashCount = 0;
+var flashVal = false;
+var flashInterval = -1;
 function reportAccel() {
     //document.body.innerText = "accel: " + accel;
     //var dir = document.getElementById("dir");
@@ -603,6 +605,22 @@ function reportAccel() {
     }
 
     accel = 0;
+
+    flashInterval = setInterval(flash, 500);
+}
+
+function flash() {
+    flashCount++;
+    if (flashVal)
+        document.body.style.background = rgb(125, 255, 255);
+    else
+        document.body.style.background = rgb(0, 0, 65);
+    flashVal = !flashVal;
+    
+    if(flashCount === 6){
+        flashCount = 0;
+        clearInterval(flashInterval);
+    }
 }
 
 
