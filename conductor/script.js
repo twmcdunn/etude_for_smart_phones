@@ -62,7 +62,7 @@ function resetDatabase() {
         }
     });
 }
-
+var startButton;
 function deleteEventRecord(eventNum) {
     var params = {
         Key: {
@@ -81,10 +81,10 @@ function deleteEventRecord(eventNum) {
             deleteEventRecord(eventNum + 1);
         }
         else {
-            var button = document.createElement("BUTTON");
-            button.innerText = "START PIECE";
-            button.onclick = startPiece;
-            document.body.appendChild(button);
+             startButton = document.createElement("BUTTON");
+            startButton.innerText = "START PIECE";
+            startButton.onclick = startPiece;
+            document.body.appendChild(startButton);
             checkUsersInterval = setInterval(checkUsers, 500);
         }
     });
@@ -160,14 +160,14 @@ function checkIfStarted() {
             clearInterval(checkIfStartedInterval);
             clearInterval(checkUsersInterval);
             //pieceStartTime = data.Items[0].PIECE_START_TIME.N;
-            
+            removeqrCode();
         }
     });
   }
 
   function removeqrCode(){
-    document.removeChild(qrCode);
-    document.removeChild(button);
+    document.body.removeChild(qrCode);
+    document.body.removeChild(startButton);
     document.getElementById("userNumText").innerText = "";
-    document.removeChild(document.getElementById("userLink"));
+    document.body.removeChild(document.getElementById("userLink"));
   }
