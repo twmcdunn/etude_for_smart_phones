@@ -289,7 +289,10 @@ function scheduleEventListener() {//"Even listeners" are really home grown
     // var now = new Date().getTime();
     if(myNotes.length === 0)
         return;
-    var t = Math.max(Number(myNotes[0].relativeTime) - 500, 50)
+    var t = Number(myNotes[0].relativeTime);
+    myNotes.forEach((note) => {t = Math.min(note.relativeTime, t)});//find smallest interval for all notes
+    var t = Math.max(t - 500, 50);
+    console.log("listening interval: " + t);
     //t = 50;
     eventListenerInterval = setInterval(listenForEvent, t);
 }
