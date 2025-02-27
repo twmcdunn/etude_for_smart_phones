@@ -132,6 +132,17 @@ function startPiece() {
     checkInterval = setInterval(checkProgress, 1000);
 }
 
+var aniTime = 0;
+setInterval(animate, 1000);
+
+function animate(){
+    aniTime++;
+    var brightness = (Math.sin(2 * Math.PI * aniTime / 240.0) + 1) / 2.0;
+    brigthness = 64 + 128 * brightness;
+    document.body.style.backgroundColor = `rgb(${0}, ${brightness}, ${brigthness})`;//rgb(0,64 + 128 * brightness,64 + 128 * brightness);
+}
+
+
 function checkProgress() {//force events to take place if its been 20 seconds since activation
 
     var params = {
@@ -207,6 +218,7 @@ function writeEventToDB(eventNum, eventVol) {
         },
         TableName: "EFSP_EVENTS"
     };
+    console.log("EVENT TIMEOUT: " + new Date().getTime().toString());
     ddb.putItem(params, function (err, data) {
         if (err) {
             console.log("error", err);

@@ -300,6 +300,7 @@ function listenForEvent() {
         TableName: "EFSP_EVENTS"
     };
 
+    const timeOfQuery = new Date().getTime();
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
@@ -307,6 +308,11 @@ function listenForEvent() {
             //since this method pops all notes that are children of the event
             //there will be no duplicate invocations
             scheduleNotes(eventNum, data.Items[0].TIME_NUM.N, data.Items[0].EVENT_VOL.N);
+        }
+        var dur = new Date().getTime() - timeOfQuery;
+
+        if(dur > 5000){
+            console.log("LONG QUERY" + dur);
         }
     });
 }
@@ -612,9 +618,9 @@ function reportAccel() {
 function flash() {
     flashCount++;
     if (flashVal)
-        document.body.style.background = rgb(125, 255, 255);
+        document.body.style.backgroundColor = 'rgb(125, 255, 255)';
     else
-        document.body.style.background = rgb(0, 0, 65);
+        document.body.style.backgroundColor = 'rgb(0, 0, 65)';
     flashVal = !flashVal;
     
     if(flashCount === 6){
