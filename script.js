@@ -581,8 +581,8 @@ function resolvedPermissions(){
 
 function reportAccel(){
     //document.body.innerText = "accel: " + accel;
-    var dir = document.getElementById("dir");
-    dir.innerText = "accel: " + accel;
+    //var dir = document.getElementById("dir");
+    //dir.innerText = "accel: " + accel;
     accel = Math.min(accel, 150);
     accel -= 20;
     accel /= 130.0;
