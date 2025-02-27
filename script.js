@@ -1,3 +1,5 @@
+import NoSleep from 'nosleep.js';
+
 //This video outlines the extensions needed in VS Code for 
 //web development: https://www.youtube.com/watch?v=5deeCvboSos
 
@@ -552,6 +554,8 @@ function getPermissions() {
   }
   document.body.removeChild(button);
   updateAndGetUserNum();
+  var noSleep = new NoSleep();
+  noSleep.enable();
 }
 
 function animateDirections(){
