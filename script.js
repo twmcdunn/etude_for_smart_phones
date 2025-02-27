@@ -580,6 +580,7 @@ function getPermissions() {
 
     }
     document.body.removeChild(button);
+    document.getElementById("dir").innerText = "";
     updateAndGetUserNum();
     //var noSleep = new NoSleep();
     //noSleep.enable();

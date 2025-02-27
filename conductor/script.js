@@ -23,6 +23,7 @@ var ddb = getDDB();
 
 var userNumText = document.createElement("p");
 userNumText.id = "userNumText";
+userNumText.style.color = "rgb(0,255,255)";
 document.body.appendChild(userNumText);
 
 var qrCode = document.createElement("img");
@@ -140,3 +141,33 @@ function animate(){
     brigthness = 64 + 128 * brightness;
     document.body.style.backgroundColor = `rgb(${0}, ${brightness}, ${brigthness})`;//rgb(0,64 + 128 * brightness,64 + 128 * brightness);
 }
+
+var checkIfStartedInterval = setInterval(checkIfStarted, 1000);
+function checkIfStarted() {
+    var params = {
+        ExpressionAttributeValues: {
+            ":a": { N: "-1" }
+        },
+        KeyConditionExpression: "EVENT_NUM = :a",
+        ProjectionExpression: "EVENT_NUM,NUM_OF_USERS,PIECE_START_TIME",
+        TableName: "EFSP_EVENTS"
+    };
+  
+    var results = ddb.query(params, function (err, data) {
+        if (err) {
+            console.log("error", err);
+        } else if (data.Items[0].PIECE_START_TIME.N != -1) {
+            clearInterval(checkIfStartedInterval);
+            clearInterval(checkUsersInterval);
+            //pieceStartTime = data.Items[0].PIECE_START_TIME.N;
+            
+        }
+    });
+  }
+
+  function removeqrCode(){
+    document.removeChild(qrCode);
+    document.removeChild(button);
+    document.getElementById("userNumText").innerText = "";
+    document.removeChild(document.getElementById("userLink"));
+  }
