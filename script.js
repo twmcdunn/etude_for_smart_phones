@@ -285,6 +285,8 @@ var eventListenerInterval = -1;
 function scheduleEventListener() {//"Even listeners" are really home grown
     //listen at regular intervals a little smaller than the relative time of the next note to play
     // var now = new Date().getTime();
+    if(myNotes.length === 0)
+        return;
     var t = Math.max(Number(myNotes[0].relativeTime) - 500, 50)
     eventListenerInterval = setInterval(listenForEvent, t);
 }
@@ -364,8 +366,10 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
         if (audioContext.state != "running") {
             audioContext.resume();
         }
-        source.start(Math.max(audioContext.currentTime +
-            ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0), 0));
+        var when = audioContext.currentTime +
+        ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0);
+        if(when > -10000)
+            source.start(Math.max(when, 0));
 
 
     }
@@ -612,7 +616,7 @@ function reportAccel() {
 
     accel = 0;
 
-    flashInterval = setInterval(flash, 500);
+    flashInterval = setInterval(flash, 100);
 }
 
 function flash() {
@@ -623,7 +627,7 @@ function flash() {
         document.body.style.backgroundColor = 'rgb(0, 0, 65)';
     flashVal = !flashVal;
     
-    if(flashCount === 6){
+    if(flashCount === 7){
         flashCount = 0;
         clearInterval(flashInterval);
     }
