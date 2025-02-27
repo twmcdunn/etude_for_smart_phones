@@ -57,9 +57,9 @@ public class Composer {
 
             basicChord(chords[0], time, 6, 3, 1 + i / 3, 0);
 
-            basicChord(chords[1], time + 3, 6, 3, 1 + i / 3, 0);
+            basicChord(chords[1], time + 4, 6, 3, 1 + i / 3, 0);
 
-            time += 4;
+            time += 5;
         }
 
         // 18 sec of chords in 3 voices
@@ -84,7 +84,7 @@ public class Composer {
             shuffleArray(octArr);
             for (int n = 0; n < 7; n++) {
                 basicChord(chords[0], time, 4 + octArr[n], 1, n % 4, 3 * Math.random());
-                basicChord(chords[1], time + 3, 4 + octArr[n], 1, n % 4, 3 * Math.random());
+                basicChord(chords[1], time + 4, 4 + octArr[n], 1, n % 4, 3 * Math.random());
             }
             time += 10;
         }
@@ -95,7 +95,7 @@ public class Composer {
             for (int n = 0; n < 7; n++) {
                 basicChord(chords[0], time, 4 + n, 4, n % 4,
                         6 * Math.random());
-                basicChord(chords[1], time + 3, 4 + n, 5, n % 4,
+                basicChord(chords[1], time + 7, 4 + n, 5, n % 4,
                         6 * Math.random());
             }
             time += 10;
