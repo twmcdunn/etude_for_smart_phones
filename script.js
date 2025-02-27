@@ -29,7 +29,7 @@ if (local)
     ddb = new LocalDBClient();
 
 console.log("hi");
-
+/*
 var buttonFuncs = [resetLocalData, test, readComposition, updateAndGetUserNum];
 var buttonTexts = [
     "Reset Local Data",
@@ -44,6 +44,7 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     button.onclick = buttonFuncs[i];
     document.body.appendChild(button);
 }
+    */
 var AudioContext = window.AudioContext // Default
     || window.webkitAudioContext // Safari and old versions of Chrome
     || false;
@@ -109,11 +110,13 @@ function resetLocalData() {
     activeSoundEvents = 0;
     pieceStartTime = -1;
 
+    /*
     var button = document.createElement("BUTTON");
     //button.id = "start";
     button.innerText = "Start";
     button.onclick = updateAndGetUserNum;
     document.body.appendChild(button);
+    */
 
 }
 
@@ -548,7 +551,7 @@ function getPermissions() {
 
   }
   document.body.removeChild(button);
-
+  updateAndGetUserNum();
 }
 
 function animateDirections(){
