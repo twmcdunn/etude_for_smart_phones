@@ -290,7 +290,7 @@ function scheduleEventListener() {//"Even listeners" are really home grown
     if(myNotes.length === 0)
         return;
     var t = Number(myNotes[0].relativeTime);
-    myNotes.forEach((note) => {t = Math.min(note.relativeTime, t)});//find smallest interval for all notes
+    //myNotes.forEach((note) => {t = Math.min(note.relativeTime, t)});//find smallest interval for all notes
     var t = Math.max(t - 500, 50);
     console.log("listening interval: " + t);
     //t = 50;
@@ -319,6 +319,7 @@ function listenForEvent() {
             //since this method pops all notes that are children of the event
             //there will be no duplicate invocations
             scheduleNotes(eventNum, data.Items[0].TIME_NUM.N, data.Items[0].EVENT_VOL.N);
+            listenForEvent();//keep checking until there's no more data
         }
         var dur = new Date().getTime() - timeOfQuery;
 
