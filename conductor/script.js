@@ -109,7 +109,6 @@ function checkUsers() {
 }
 
 var startTime;
-var checkInterval;
 function startPiece() {
     startTime = new Date().getTime();
     var params = {
@@ -129,7 +128,7 @@ function startPiece() {
             console.log("error", err);
         }
     });
-    checkInterval = setInterval(checkProgress, 1000);
+    
 }
 
 var aniTime = 0;
@@ -140,88 +139,4 @@ function animate(){
     var brightness = (Math.sin(2 * Math.PI * aniTime / 240.0) + 1) / 2.0;
     brigthness = 64 + 128 * brightness;
     document.body.style.backgroundColor = `rgb(${0}, ${brightness}, ${brigthness})`;//rgb(0,64 + 128 * brightness,64 + 128 * brightness);
-}
-
-
-function checkProgress() {//force events to take place if its been 20 seconds since activation
-
-    var params = {
-        ExpressionAttributeValues: {
-            ":a": { N: (-1).toString() }
-        },
-        KeyConditionExpression: "EVENT_NUM = :a",
-        ProjectionExpression: "EVENT_NUM,CURRENT_EVENT_NUM",
-        TableName: "EFSP_EVENTS"
-    };
-
-    ddb.query(params, function (err, data) {
-        if (err) {
-            console.log("error", err);
-        } else{
-            var eNum = data.Items[0].CURRENT_EVENT_NUM.N;
-            while(soundEvents.length > 0 && soundEvents[0].eventNum < eNum){
-                soundEvents.shift();
-            }
-            if(Number(soundEvents[0].activationTime) + 20000 < new Date().getTime() - startTime){
-                soundEvents.shift();
-                instantiateSoundEvent();
-            }
-            if(soundEvents.length == 0){
-                clearInterval(checkInterval);
-            }
-        }
-    });
-}
-
-function instantiateSoundEvent(eventVol) {
-    //deactivateEvent();
-    console.log("EVENT INSTANTIATED @");
-
-    if (!Number.isFinite(eventVol)) eventVol = Math.random();//for timeouts (and testing)
-
-    var params = {
-        ExpressionAttributeValues: {
-            ":increment": { N: "1" }
-        },
-        Key: {
-            EVENT_NUM: {
-                N: "-1"
-            }
-        },
-        UpdateExpression: "SET CURRENT_EVENT_NUM = CURRENT_EVENT_NUM + :increment",
-        TableName: "EFSP_EVENTS",
-        ReturnValues: "UPDATED_OLD"
-    };
-    ddb.updateItem(params, function (err, data) {
-        if (err) {
-            console.log("error", err);
-        }
-        else {
-            console.log("CURRENT_EVENT_NUM UPDATED. OLD = ", data.Attributes.CURRENT_EVENT_NUM.N);
-            writeEventToDB(data.Attributes.CURRENT_EVENT_NUM.N, eventVol);
-        }
-    });
-}
-
-function writeEventToDB(eventNum, eventVol) {
-    var params = {
-        Item: {
-            EVENT_NUM: {
-                N: eventNum.toString()
-            },
-            TIME_NUM: {
-                N: new Date().getTime().toString()
-            },
-            EVENT_VOL: {
-                N: eventVol.toString()
-            }
-        },
-        TableName: "EFSP_EVENTS"
-    };
-    console.log("EVENT TIMEOUT: " + new Date().getTime().toString());
-    ddb.putItem(params, function (err, data) {
-        if (err) {
-            console.log("error", err);
-        }
-    });
 }

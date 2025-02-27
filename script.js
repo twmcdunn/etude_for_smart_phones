@@ -203,7 +203,7 @@ async function queueSounds1() {
 
     loadSound(buffers, 1, 5);
 
-    loadSound(attackBuffers, 101, 293);
+    loadSound(attackBuffers, 101, 294);
 
     /*
     for (let n = 1; n <= 5; n++) {//n is sampleNum

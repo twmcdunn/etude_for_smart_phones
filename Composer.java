@@ -16,6 +16,16 @@ public class Composer {
     public static void main(String[] args) {
         new Composer();
         // createTimbres();
+
+        //loadSampleFreqs();
+        //renderAttack();
+    }
+
+    public static void renderAttack(){
+        int[][] chords1 = seq.getChords();
+
+        for(int i = 0; i < 6; i++)
+            basicChord(new int[] { 1, 5, 6, 10, 13, 15, 18 },0, 3 + i, 1, 0, 30 + 0.1 * i, 1 / (6.0 * 5));
     }
 
     public Composer() {
@@ -23,7 +33,7 @@ public class Composer {
 
         double time = 3;
         int[][] chords1 = seq.getChords();
-        basicChord(chords1[0], time, 6, 1, 0, 0);
+        basicChord(chords1[0], time, 6, 1, 0, 6);
         basicChord(chords1[1], time + 3, 6, 1, 0, 0);
 
         time += 30; // 30 seconds to breath
@@ -127,8 +137,14 @@ public class Composer {
     }
 
     public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,
-            double attackDur) {
-        double dur = 0.05;
+    double attackDur) {
+
+        basicChord(chord, time, oct, timbre, arpSetting, attackDur, 1);
+    }
+
+    public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,
+            double attackDur, double durScale) {
+        double dur = 0.05 * durScale;
         double relVol = 1;
         double relTime = 0;
         SoundEvent soundEvent = new SoundEvent(event, (int) Math.rint(time * 1000), eventUser, seq.modeTrans);
@@ -229,14 +245,14 @@ public class Composer {
                  * soundEvent.add(note1);
                  */
                 recordNote(c0Freq * Math.pow(2, melody[user % melody.length] / 20.0),
-                        attackDur - attackDur * relTime / 6.0, relVol, timbre, attackWriter);
+                attackDur - attackDur * relTime / 6.0, relVol, timbre, attackWriter);
             }
             if (relTime != 0)
                 user++;
 
             relTime += dur;
             dur *= 1.01;
-            relVol *= 0.95;
+            relVol *= (0.95 + 0.04 * (1-durScale));
         }
 
         if (attackDur > 0) {
