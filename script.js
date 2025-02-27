@@ -44,8 +44,8 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     button.onclick = buttonFuncs[i];
     document.body.appendChild(button);
 }
-var AudioContext = //window.AudioContext || // Default
-    window.webkitAudioContext // Safari and old versions of Chrome
+var AudioContext = window.AudioContext // Default
+    || window.webkitAudioContext // Safari and old versions of Chrome
     || false;
 
 var audioContext;
@@ -195,9 +195,9 @@ async function queueSounds1() {
         req.send();
     }
 
-    loadSound(buffers,1,5);
+    loadSound(buffers, 1, 5);
 
-    loadSound(attackBuffers,101,293);
+    loadSound(attackBuffers, 101, 293);
 
     /*
     for (let n = 1; n <= 5; n++) {//n is sampleNum
@@ -335,10 +335,10 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
             var cents = Math.log2(ratio) * 1200;
             //console.log("CENTS: " + cents);
 
-            try{
-            source.detune.value = cents;
+            try {
+                source.detune.value = cents;
             }
-            catch(e){
+            catch (e) {
                 source.playbackRate.value = ratio;
             }
         }
