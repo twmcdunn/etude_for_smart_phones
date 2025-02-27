@@ -27,6 +27,8 @@ document.body.appendChild(userNumText);
 
 var qrCode = document.createElement("img");
 qrCode.src = "../efsp.svg";
+qrCode.height = "900";
+qrCode.width = "900";
 document.body.appendChild(qrCode);
 
 if (local)

@@ -44,8 +44,8 @@ for (let i = 0; i < buttonFuncs.length; i++) {
     button.onclick = buttonFuncs[i];
     document.body.appendChild(button);
 }
-var AudioContext = window.AudioContext // Default
-    || window.webkitAudioContext // Safari and old versions of Chrome
+var AudioContext = //window.AudioContext || // Default
+    window.webkitAudioContext // Safari and old versions of Chrome
     || false;
 
 var audioContext;
