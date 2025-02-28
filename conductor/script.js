@@ -24,6 +24,7 @@ var ddb = getDDB();
 var userNumText = document.createElement("p");
 userNumText.id = "userNumText";
 userNumText.style.color = "rgb(0,255,255)";
+userNumText.style.fontSize = "150%";
 document.body.appendChild(userNumText);
 
 var qrCode = document.createElement("img");
@@ -75,6 +76,9 @@ function resetDatabase() {
                 }
             });
         }
+        else{//jump rigth to making the button, if db already cleared
+            buttonAndUserText();
+        }
     });
 }
 var startButton;
@@ -96,13 +100,18 @@ function deleteEventRecord(eventNum) {
             deleteEventRecord(eventNum + 1);
         }
         else {
-            startButton = document.createElement("BUTTON");
-            startButton.innerText = "START PIECE";
-            startButton.onclick = startPiece;
-            document.body.appendChild(startButton);
-            checkUsersInterval = setInterval(checkUsers, 500);
+           buttonAndUserText();
         }
     });
+}
+
+
+function buttonAndUserText(){
+    startButton = document.createElement("BUTTON");
+    startButton.innerText = "START PIECE";
+    startButton.onclick = startPiece;
+    document.body.appendChild(startButton);
+    checkUsersInterval = setInterval(checkUsers, 500);
 }
 
 function checkUsers() {
@@ -119,7 +128,7 @@ function checkUsers() {
         if (err) {
             console.log("error", err);
         } else {
-            document.getElementById("userNumText").innerText = "Number of users connected: " + data.Items[0].NUM_OF_USERS.N;
+            document.getElementById("userNumText").innerHTML = "Number of users connected: " + data.Items[0].NUM_OF_USERS.N + "<br>Scan or go to <b>https://twmcdunn.github.io/etude_for_smart_phones</b>";
         }
     });
 }
