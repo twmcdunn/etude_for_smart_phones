@@ -295,7 +295,7 @@ function scheduleEventListener() {//"Even listeners" are really home grown
     myNotes[0]
     //myNotes.forEach((note) => {t = Math.min(note.relativeTime, t)});//find smallest interval for all notes
     var t = Math.max(t - 500, 50);
-    t = Math.min(1000, t);//when many events are triggered at once and theres only a few players interval may need to be shorter
+    t = Math.min(500, t);//when many events are triggered at once and theres only a few players interval may need to be shorter
     console.log("listening interval: " + t);
     //t = 50;
     eventListenerInterval = setInterval(listenForEvent, t);
