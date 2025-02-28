@@ -287,8 +287,10 @@ var eventListenerInterval = -1;
 function scheduleEventListener() {//"Even listeners" are really home grown
     //listen at regular intervals a little smaller than the relative time of the next note to play
     // var now = new Date().getTime();
-    if(myNotes.length === 0)
+    if(myNotes.length === 0){
+        document.getElementById("dir").innerText = "";
         return;
+    }
     var t = Number(myNotes[0].relativeTime);
     //myNotes.forEach((note) => {t = Math.min(note.relativeTime, t)});//find smallest interval for all notes
     var t = Math.max(t - 500, 50);

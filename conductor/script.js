@@ -42,23 +42,38 @@ readComposition(0, 1);
 function resetDatabase() {
     var params = {
         ExpressionAttributeValues: {
-            ":zero": { N: "0" },
-            ":negOne": { N: "-1" }
+            ":a": { N: "-1" }
         },
-        Key: {
-            EVENT_NUM: {
-                N: "-1"
-            }
-        },
-        UpdateExpression: "SET CURRENT_EVENT_NUM = :zero,NUM_OF_USERS = :zero,PIECE_START_TIME= :negOne",
+        KeyConditionExpression: "EVENT_NUM = :a",
+        ProjectionExpression: "EVENT_NUM,NUM_OF_USERS,PIECE_START_TIME",
         TableName: "EFSP_EVENTS"
     };
-    ddb.updateItem(params, function (err, data) {
+
+    var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
-        }
-        else {
-            deleteEventRecord(0);
+        } else if (data.Items[0].PIECE_START_TIME.N != -1) {//if started
+            var params = { // reset
+                ExpressionAttributeValues: {
+                    ":zero": { N: "0" },
+                    ":negOne": { N: "-1" }
+                },
+                Key: {
+                    EVENT_NUM: {
+                        N: "-1"
+                    }
+                },
+                UpdateExpression: "SET CURRENT_EVENT_NUM = :zero,NUM_OF_USERS = :zero,PIECE_START_TIME= :negOne",
+                TableName: "EFSP_EVENTS"
+            };
+            ddb.updateItem(params, function (err, data) {
+                if (err) {
+                    console.log("error", err);
+                }
+                else {
+                    deleteEventRecord(0);
+                }
+            });
         }
     });
 }
@@ -81,7 +96,7 @@ function deleteEventRecord(eventNum) {
             deleteEventRecord(eventNum + 1);
         }
         else {
-             startButton = document.createElement("BUTTON");
+            startButton = document.createElement("BUTTON");
             startButton.innerText = "START PIECE";
             startButton.onclick = startPiece;
             document.body.appendChild(startButton);
@@ -129,13 +144,13 @@ function startPiece() {
             console.log("error", err);
         }
     });
-    
+
 }
 
 var aniTime = 0;
 setInterval(animate, 1000);
 
-function animate(){
+function animate() {
     aniTime++;
     var brightness = (Math.sin(2 * Math.PI * aniTime / 240.0) + 1) / 2.0;
     brigthness = 64 + 128 * brightness;
@@ -152,7 +167,7 @@ function checkIfStarted() {
         ProjectionExpression: "EVENT_NUM,NUM_OF_USERS,PIECE_START_TIME",
         TableName: "EFSP_EVENTS"
     };
-  
+
     var results = ddb.query(params, function (err, data) {
         if (err) {
             console.log("error", err);
@@ -163,11 +178,11 @@ function checkIfStarted() {
             removeqrCode();
         }
     });
-  }
+}
 
-  function removeqrCode(){
+function removeqrCode() {
     document.body.removeChild(qrCode);
     document.body.removeChild(startButton);
     document.getElementById("userNumText").innerText = "";
     document.body.removeChild(document.getElementById("userLink"));
-  }
+}
