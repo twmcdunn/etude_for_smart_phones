@@ -224,6 +224,7 @@ async function queueSounds1() {
         // the wake lock request fails - usually system related, such being low on battery
         console.log(`${err.name}, ${err.message}`);
     }
+
 }
 
 
@@ -287,7 +288,7 @@ var eventListenerInterval = -1;
 function scheduleEventListener() {//"Even listeners" are really home grown
     //listen at regular intervals a little smaller than the relative time of the next note to play
     // var now = new Date().getTime();
-    if(myNotes.length === 0){
+    if (myNotes.length === 0) {
         document.getElementById("dir").innerText = "";
         return;
     }
@@ -302,7 +303,7 @@ function scheduleEventListener() {//"Even listeners" are really home grown
 }
 
 function listenForEvent() {
-    if(dirAni){
+    if (dirAni) {
         animateDirections();
     }
     var eventNum = Number(myNotes[0].parentEventNum);
@@ -327,7 +328,7 @@ function listenForEvent() {
         }
         var dur = new Date().getTime() - timeOfQuery;
 
-        if(dur > 5000){
+        if (dur > 5000) {
             console.log("LONG QUERY" + dur);
         }
     });
@@ -381,8 +382,8 @@ function scheduleNotes(eventNum, eventTime, eventVol) {
             audioContext.resume();
         }
         var when = audioContext.currentTime +
-        ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0);
-        if(when > -10000)
+            ((Number(eventTime) + Number(note.relativeTime) - Number(new Date().getTime())) / 1000.0);
+        if (when > -10000)
             source.start(Math.max(when, 0));
 
 
@@ -642,8 +643,8 @@ function flash() {
     else
         document.body.style.backgroundColor = 'rgb(0, 0, 65)';
     flashVal = !flashVal;
-    
-    if(flashCount >= 7){
+
+    if (flashCount >= 7) {
         clearInterval(flashInterval);
         flashVal = true;
         document.body.style.backgroundColor = 'rgb(0, 0, 65)';

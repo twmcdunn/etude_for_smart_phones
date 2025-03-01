@@ -22,7 +22,7 @@ public class Composer {
     }
 
     public static void renderAttack(){
-        int[][] chords1 = seq.getChords();
+        //int[][] chords1 = seq.getChords();
 
         for(int i = 0; i < 6; i++)
             basicChord(new int[] { 1, 5, 6, 10, 13, 15, 18 },0, 3 + i, 1, 0, 30 + 0.1 * i, 1 / (6.0 * 5));
@@ -33,8 +33,8 @@ public class Composer {
 
         double time = 3;
         int[][] chords1 = seq.getChords();
-        basicChord(chords1[0], time, 6, 1, 0, 6);
-        basicChord(chords1[1], time + 3, 6, 1, 0, 0);
+        basicChord1(chords1[0], time, 6, 1, 0, 6,3);
+        basicChord1(chords1[1], time + 3, 6, 1, 0, 0,3);
 
         time += 30; // 30 seconds to breath
         // 18 sec of chords
@@ -42,9 +42,9 @@ public class Composer {
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
 
-            basicChord(chords[0], time, 6, 1, 0, ad);
+            basicChord1(chords[0], time, 6, 1, 0, ad,3);
             ad = 0;
-            basicChord(chords[1], time + 3, 6, 1, 0, ad);
+            basicChord1(chords[1], time + 3, 6, 1, 0, ad,3);
             time += 4;
         }
 
@@ -53,9 +53,9 @@ public class Composer {
         // 18 sec of chords in 2 octaves (unison)
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
-            basicChord(chords[0], time, 6, 2, i / 3, 0);
+            basicChord1(chords[0], time, 6, 2, i / 3, 0,3);
 
-            basicChord(chords[1], time + 3, 6, 2, i / 3, 3);
+            basicChord1(chords[1], time + 3, 6, 2, i / 3, 3,3);
             time += 4;
         }
 
@@ -65,9 +65,9 @@ public class Composer {
         for (int i = 0; i < 6; i++) {
             int[][] chords = seq.getChords();
 
-            basicChord(chords[0], time, 6, 3, 1 + i / 3, 0);
+            basicChord1(chords[0], time, 6, 3, 1 + i / 3, 0, 3);
 
-            basicChord(chords[1], time + 4, 6, 3, 1 + i / 3, 0);
+            basicChord1(chords[1], time + 4, 6, 3, 1 + i / 3, 0, 3);
 
             time += 5;
         }
@@ -139,11 +139,22 @@ public class Composer {
     public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,
     double attackDur) {
 
-        basicChord(chord, time, oct, timbre, arpSetting, attackDur, 1);
+        basicChord(chord, time, oct, timbre, arpSetting, attackDur, 1, 1);
     }
 
     public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,
-            double attackDur, double durScale) {
+            double attackDur, double durScale){
+                basicChord(chord, time,oct,timbre,arpSetting,attackDur,durScale,1);
+            }
+
+    public static void basicChord1(int[] chord, double time, int oct, int timbre, int arpSetting, double attackDur,
+    int copiesOfNotes) {
+
+        basicChord(chord, time, oct, timbre, arpSetting, attackDur, 1, copiesOfNotes);
+    }
+
+    public static void basicChord(int[] chord, double time, int oct, int timbre, int arpSetting,
+            double attackDur, double durScale, int copiesOfNotes) {
         double dur = 0.05 * durScale;
         double relVol = 1;
         double relTime = 0;
@@ -231,6 +242,13 @@ public class Composer {
                     u);
 
             soundEvent.add(note);
+            if(relTime != 0){
+                for(int c = 1; c < copiesOfNotes; c++){//1 copy already above
+                    Note noteCopy = new Note(note.hs, note.relativeTime, note.relativeVol, note.sampleNum, note.userNum + c * 30);
+                    soundEvent.add(noteCopy);
+                }
+            }
+
             if (attackDur > 0
             // && Math.random() < attackDur / 6.0// thins it out so that density is the same
             // as in decay
