@@ -629,11 +629,10 @@ function reportAccel() {
 
     if (directionsInterval === -1) {
         instantiateSoundEvent(accel);
+        flashInterval = setInterval(flash, 100);
     }
 
     accel = 0;
-
-    flashInterval = setInterval(flash, 100);
 }
 
 function flash() {
